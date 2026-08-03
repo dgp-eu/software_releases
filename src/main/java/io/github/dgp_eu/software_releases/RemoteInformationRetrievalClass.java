@@ -69,7 +69,8 @@ public final class RemoteInformationRetrievalClass {
                 docBuilderFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
                 docBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
                 docBuilderFactory.setExpandEntityReferences(false);
-                // and these as well, per Timothy Morgan's 2014 paper: "XML Schema, DTD, and Entity Attacks"
+                // and these as well, per Timothy Morgan's 2014
+                // paper: "XML Schema, DTD, and Entity Attacks"
                 docBuilderFactory.setXIncludeAware(false);
                 doc = parseDocumentFromInputStream(inStream, docBuilderFactory);
             } catch (ParserConfigurationException e) {
@@ -144,6 +145,8 @@ public final class RemoteInformationRetrievalClass {
     public static final class RequestSubClass {
         /** Variable for Time Out connectivity */
         private static Long connectionTimeOut = 5L;
+        /** Constant for HTTP Error code 200 */
+        private static final Long HTTP_ERROR_OK = 200L;
         /** HTTP client constant */
         private static final HttpClient CLIENT = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_3)
@@ -176,7 +179,7 @@ public final class RemoteInformationRetrievalClass {
                     .send(requestContent, HttpResponse.BodyHandlers.ofString());
             String fileContent = null;
             final long responseCode = responseFull.statusCode();
-            if (responseCode == 200) {
+            if (responseCode == HTTP_ERROR_OK) {
                 exposeHttpResponseVersion(responseFull);
                 fileContent = responseFull.body();
             } else {
@@ -202,7 +205,7 @@ public final class RemoteInformationRetrievalClass {
             final HttpResponse<Void> responseHeader = CLIENT
                     .send(requestHeader, HttpResponse.BodyHandlers.discarding());
             final long responseCode = responseHeader.statusCode();
-            if (responseCode == 200) {
+            if (responseCode == HTTP_ERROR_OK) {
                 exposeHttpResponseVersion(responseHeader);
                 final String lastModified = responseHeader.headers()
                         .firstValue("Last-Modified")
@@ -260,9 +263,9 @@ public final class RemoteInformationRetrievalClass {
                         throw new UnsupportedOperationException(strFeedbackErr);
                 }
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
                 final String strFeedback = String.format("Execution was interrupted... %s", Arrays.toString(e.getStackTrace()));
                 LogExposureClass.LOGGER.warn(strFeedback);
+                Thread.currentThread().interrupt();
             } catch (IOException e) {
                 final String strFeedback = String.format("Input/Output Exception while attempting to read remote XML from an URL as %s", Arrays.toString(e.getStackTrace()));
                 LogExposureClass.LOGGER.error(strFeedback);

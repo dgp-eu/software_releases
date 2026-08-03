@@ -157,9 +157,9 @@ class GetInformationFromDatabase implements Runnable {
     }
 
     private static Properties getEnvironmentVariableValueForMySql() {
+        final Properties properties = new Properties();
         final InputStream inputStream = BasicStructuresClass.getEnvironmentVariableIntoInputStream("MYSQL");
         final JsonNode ndMySQL = JsonOperationsClass.getJsonFileNodes(inputStream);
-        final Properties properties = new Properties();
         properties.put("ServerName", JsonOperationsClass.getJsonValue(ndMySQL, "/ServerName"));
         properties.put("Port", JsonOperationsClass.getJsonValue(ndMySQL, "/Port"));
         properties.put("Username", JsonOperationsClass.getJsonValue(ndMySQL, "/Username"));

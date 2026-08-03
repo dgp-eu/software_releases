@@ -38,7 +38,7 @@ public final class WebClass {
     /** Menu */
     private static final SequencedMap<String, Map<String, String>> MAP_MENU = buildMenu();
     /** Intentionally empty table properties for views that require no extra options. */
-    private static final Properties EMPTY_TABLE_PROPERTIES = new Properties();
+    private static final Properties EMPTY_TABLE_PROPS = new Properties();
     /** Variable for Folders relevant for Checksum Exposure */
     private static String[] strFolderNames = new String[0];
 
@@ -120,9 +120,9 @@ public final class WebClass {
     private static String getFileHashingAsHtmlTable() {
         final String[] inAlgorithms = {"SHA-256"};
         FileOperationsClass.StatisticsSubClass.setChecksumAlgorithms(inAlgorithms);
-        final String[] folderNamesSnapshot = Arrays.copyOf(strFolderNames, strFolderNames.length);
+        final String[] folderNames = Arrays.copyOf(strFolderNames, strFolderNames.length);
         final List<Properties> foldersStatistics = new ArrayList<>();
-        for(final String crtFolderName: folderNamesSnapshot) {
+        for(final String crtFolderName: folderNames) {
             final List<Properties> crtFileStatistics = FileOperationsClass.StatisticsSubClass.getFileStatisticsIntoListOfProperties(crtFolderName);
             foldersStatistics.addAll(crtFileStatistics);
         }
@@ -130,7 +130,7 @@ public final class WebClass {
         final List<SequencedMap<Object, Object>> orderedList = foldersStatistics.stream()
                 .map(prop -> BasicStructuresClass.ListAndMapSubClass.sortProperties(prop, desiredOrder))
                 .toList();
-        return HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(orderedList, EMPTY_TABLE_PROPERTIES);  
+        return HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(orderedList, EMPTY_TABLE_PROPS);  
     }
 
     /**
@@ -176,7 +176,7 @@ public final class WebClass {
                     + strSqLiteInfoBox;
             case BasicStructuresClass.STR_TS            -> HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(
                     SpecificSqLiteClass.SqLiteStatisticsSubClass.getTableStatisticsIntoListForHtmlTable(),
-                    EMPTY_TABLE_PROPERTIES)
+                    EMPTY_TABLE_PROPS)
                     + strSqLiteInfoBox;
             default                                     -> String.format("Welcome %s", System.getProperty("user.name"));
         });
@@ -266,12 +266,12 @@ public final class WebClass {
                                     recordProperties.get("File Installed Id")));
                     newProperties.put("Profile",
                             recordProperties.get("Profile Name"));
-                    String latestReleaseAgingDays = String.valueOf(recordProperties.get("Latest release aging days"));
-                    if ("null".equals(latestReleaseAgingDays)) {
-                        latestReleaseAgingDays = "";
+                    String lastRlsAgingDays = String.valueOf(recordProperties.get("Latest release aging days"));
+                    if (BasicStructuresClass.STR_NULL.equals(lastRlsAgingDays)) {
+                        lastRlsAgingDays = "";
                     }
                     newProperties.put(BasicStructuresClass.STR_ROW_STYLE,
-                            establishRowStyle(latestReleaseAgingDays.replaceAll("\\.0$", "")));
+                            establishRowStyle(lastRlsAgingDays.replaceAll("\\.0$", "")));
                     softwareReleases.add(newProperties);
                 });
             }

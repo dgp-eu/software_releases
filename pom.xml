@@ -7,7 +7,7 @@
 
     <groupId>io.github.dgp-eu</groupId>
     <artifactId>software_releases</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>software_releases</name>
@@ -47,7 +47,7 @@
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <sonar.organization>dgp-eu</sonar.organization>
         <!-- Dependency versions -->
-        <tools.version>1.2.0</tools.version>
+        <tools.version>1.2.1-SNAPSHOT</tools.version>
         <jackson-databind.version>3.2.1</jackson-databind.version>
         <junit-jupiter.version>6.1.2</junit-jupiter.version>
         <oshi-core-ffm.version>7.4.3</oshi-core-ffm.version>

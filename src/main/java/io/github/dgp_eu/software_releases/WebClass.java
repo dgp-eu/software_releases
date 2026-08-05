@@ -307,10 +307,8 @@ public final class WebClass {
             List<Properties> resultReleases = new ArrayList<>();
             try (Connection objConnection = SpecificSqLiteClass.getSqLiteConnection();
                  Statement objStatement = DatabaseOperationsClass.ConnectivitySubClass.createSqlStatement(BasicStructuresClass.STR_SQLITE, objConnection)) {
-                final Properties rsProperties = new Properties();
-                rsProperties.put("Purpose", STR_SOFT_RELEASES);
-                rsProperties.put("QueryToUse", DatabaseOperationsClass.getPreDefinedQuery(BasicStructuresClass.STR_SQLITE, "ReleasesListProductBranches"));
-                rsProperties.put("FetchType", DatabaseOperationsClass.STR_VALUES);
+                final String queryToUse = DatabaseOperationsClass.getPreDefinedQuery(BasicStructuresClass.STR_SQLITE, "ReleasesListProductBranches");
+                final Properties rsProperties = DatabaseOperationsClass.packageResultSetProperties(STR_SOFT_RELEASES, queryToUse);
                 resultReleases = DatabaseOperationsClass.ResultSettingSubClass.getResultSetStandardized(objStatement, rsProperties, new Properties());
             } catch (SQLException e) {
                 final String strFeedbackErr = String.format("%s connection has failed %s", BasicStructuresClass.STR_SQLITE, e.getLocalizedMessage());

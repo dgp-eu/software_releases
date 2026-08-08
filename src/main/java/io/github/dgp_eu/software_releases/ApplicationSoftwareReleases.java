@@ -5,7 +5,6 @@ package io.github.dgp_eu.software_releases;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;

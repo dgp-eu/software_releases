@@ -265,7 +265,6 @@ public final class RemoteInformationRetrievalClass {
             } catch (InterruptedException e) {
                 final String strFeedback = String.format("Execution was interrupted... %s", Arrays.toString(e.getStackTrace()));
                 LogExposureClass.LOGGER.warn(strFeedback);
-                Thread.currentThread().interrupt();
             } catch (IOException e) {
                 final String strFeedback = String.format("Input/Output Exception while attempting to read remote XML from an URL as %s", Arrays.toString(e.getStackTrace()));
                 LogExposureClass.LOGGER.error(strFeedback);

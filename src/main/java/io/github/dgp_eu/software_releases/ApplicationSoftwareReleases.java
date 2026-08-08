@@ -3,7 +3,9 @@
  */
 package io.github.dgp_eu.software_releases;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -158,13 +160,16 @@ class GetInformationFromDatabase implements Runnable {
 
     private static Properties getEnvironmentVariableValueForMySql() {
         final Properties properties = new Properties();
-        final InputStream inputStream = BasicStructuresClass.getEnvironmentVariableIntoInputStream("MYSQL");
-        final JsonNode ndMySQL = JsonOperationsClass.getJsonFileNodes(inputStream);
-        properties.put("ServerName", JsonOperationsClass.getJsonValue(ndMySQL, "/ServerName"));
-        properties.put("Port", JsonOperationsClass.getJsonValue(ndMySQL, "/Port"));
-        properties.put("Username", JsonOperationsClass.getJsonValue(ndMySQL, "/Username"));
-        properties.put("Password", JsonOperationsClass.getJsonValue(ndMySQL, "/Password"));
-        properties.put("ServerTimezone", JsonOperationsClass.getJsonValue(ndMySQL, "/ServerTimezone"));
+        try (InputStream inputStream = BasicStructuresClass.getEnvironmentVariableIntoInputStream("MYSQL")) {
+            final JsonNode ndMySQL = JsonOperationsClass.getJsonFileNodes(inputStream);
+            properties.put("ServerName", JsonOperationsClass.getJsonValue(ndMySQL, "/ServerName"));
+            properties.put("Port", JsonOperationsClass.getJsonValue(ndMySQL, "/Port"));
+            properties.put("Username", JsonOperationsClass.getJsonValue(ndMySQL, "/Username"));
+            properties.put("Password", JsonOperationsClass.getJsonValue(ndMySQL, "/Password"));
+            properties.put("ServerTimezone", JsonOperationsClass.getJsonValue(ndMySQL, "/ServerTimezone"));
+        } catch (IOException ei) {
+            LogExposureClass.exposeInputOutputException("Unable to find environment variable named MYSQL", Arrays.toString(ei.getStackTrace()));
+        }
         return properties;
     }
 

@@ -99,7 +99,7 @@ public final class OshiUsageClass {
     }
 
     /**
-     * Initiating Hardware package.
+     * Hardware methods
      */
     public static final class HardwareSubClass {
 
@@ -162,20 +162,8 @@ public final class OshiUsageClass {
          * get Network attributes
          * @return List of NetworkIF
          */
-        private static List<NetworkIF> getOshiNetworkInterfacesRaw() {
-            return getOshiHardware().getNetworkIFs();
-        }
-
-        /**
-         * get Network attributes and filter to retain UP ones
-         * @return List of NetworkIF
-         */
         public static List<NetworkIF> getOshiNetworkInterfaces() {
-            return getOshiNetworkInterfacesRaw().stream()
-                    .filter(net -> net.getIfOperStatus() == NetworkIF.IfOperStatus.UP)
-                    .filter(net -> net.getIPv4addr().length != 0
-                                || net.getIPv6addr().length != 0)
-                    .toList();
+            return getOshiHardware().getNetworkIFs();
         }
 
         /**
@@ -212,7 +200,7 @@ public final class OshiUsageClass {
     }
 
     /**
-     * Initiating Software package.
+     * Software methods
      */
     public static final class SoftwareSubClass {
 

@@ -20,6 +20,7 @@ import oshi.hardware.Firmware;
 import oshi.hardware.GlobalMemory;
 import oshi.hardware.GraphicsCard;
 import oshi.hardware.NetworkIF;
+import oshi.hardware.NetworkIF.IfOperStatus;
 import oshi.hardware.PhysicalMemory;
 import oshi.hardware.VirtualMemory;
 import oshi.software.os.NetworkParams;
@@ -323,16 +324,27 @@ public final class EnvironmentCapturingAssembleClass {
             final List<NetworkIF> networkIFs = OshiUsageClass.HardwareSubClass.getOshiNetworkInterfaces();
             for (final NetworkIF net : networkIFs) {
                 net.updateAttributes(); // Refresh interface stats
-                final String strIdentifier = "Memory MAC#" + net.getMacaddr() + " ";
-                arrayAttributes.putAll(Map.of(
-                        strIdentifier + BasicStructuresClass.STR_NAME, net.getName(),
-                        strIdentifier + "Display Name", net.getDisplayName(),
-                        strIdentifier + "IPv4", String.join(", ", net.getIPv4addr()),
-                        strIdentifier + "IPv6", String.join(", ", net.getIPv6addr()),
-                        strIdentifier + "MTU", net.getMTU(),
-                        strIdentifier + "NDIS Physical Medium Type", OshiUsageClass.getNetworkPhysicalMediumType(net.getNdisPhysicalMediumType()),
-                        strIdentifier + "Status", net.getIfOperStatus(),
-                        strIdentifier + "Speed", FormatUtil.formatBytes(net.getSpeed())));
+                final IfOperStatus status = net.getIfOperStatus();
+                final String[] addressIPV4 =  net.getIPv4addr();
+                final String[] addressIPV6 =  net.getIPv6addr();
+                boolean expose = false;
+                if (status == NetworkIF.IfOperStatus.UP
+                        && (addressIPV4.length != 0
+                                || addressIPV6.length != 0)) {
+                    expose = true;
+                }
+                if (expose) {
+                    final String strIdentifier = "Memory MAC#" + net.getMacaddr() + " ";
+                    arrayAttributes.putAll(Map.of(
+                            strIdentifier + BasicStructuresClass.STR_NAME, net.getName(),
+                            strIdentifier + "Display Name", net.getDisplayName(),
+                            strIdentifier + "IPv4", String.join(", ", addressIPV4),
+                            strIdentifier + "IPv6", String.join(", ", addressIPV6),
+                            strIdentifier + "MTU", net.getMTU(),
+                            strIdentifier + "NDIS Physical Medium Type", OshiUsageClass.getNetworkPhysicalMediumType(net.getNdisPhysicalMediumType()),
+                            strIdentifier + "Status", status,
+                            strIdentifier + "Speed", FormatUtil.formatBytes(net.getSpeed())));
+                }
             }
             return arrayAttributes;
         }

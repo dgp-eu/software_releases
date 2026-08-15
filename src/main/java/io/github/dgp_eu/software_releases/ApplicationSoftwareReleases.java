@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
-import io.github.dgp_eu.tools.cli.CommonInteractiveClass;
+import io.github.dgp_eu.tools.core.CommonInteractiveClass;
 import io.github.dgp_eu.tools.core.BasicStructuresClass;
 import io.github.dgp_eu.tools.core.FileOperationsClass;
 import io.github.dgp_eu.tools.core.LogExposureClass;
@@ -45,7 +45,7 @@ public final class ApplicationSoftwareReleases {
      * @param args command-line arguments
      */
     /* default */ static void main(final String... args) {
-        CommonInteractiveClass.startMeUpWithParameters("logs/Software-Releases-", "/software-releases-pom.xml");
+        CommonInteractiveClass.startMeUpWithParameters("logs/Software-Releases", "/software-releases-pom.xml");
         final int intWebExitCode = new CommandLine(new ApplicationSoftwareReleases()).execute(args);
         CommonInteractiveClass.shutMeDownWithParameters(intWebExitCode, args[0]);
     }

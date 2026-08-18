@@ -127,22 +127,32 @@ public final class WebClass {
 
     /**
      * Body content handler
+     * @param page page identifier
      * @return web Content
      */
-    public static gg.jte.Content handleBodyContent() {
-        final String page = UndertowClass.ParametersSubClass.getPageParameter();
-        final String strSqLiteInfoBox = HtmlClass.buildFileInfoBox(Path.of(SpecificSqLiteClass.getInternalDatabase()));
+    public static gg.jte.Content handleBodyContent(final String page) {
         return output -> output.writeContent(switch(page) {
-            case BasicStructuresClass.STR_ENV_DTLS      -> getEnvironmentDetailsAsHtmlTable()
-                    + HtmlClass.buildFileInfoBox(Path.of(ProjectClass.getPomFile()));
+            case BasicStructuresClass.STR_ENV_DTLS      -> getEnvironmentDetailsAsHtmlTable();
             case BasicStructuresClass.STR_FILE_HASHING  -> getFileHashingAsHtmlTable();
-            case BasicStructuresClass.STR_SOFTWARE_RLS  -> getSoftwareReleasesIntoHtmlTable()
-                    + strSqLiteInfoBox;
+            case BasicStructuresClass.STR_SOFTWARE_RLS  -> getSoftwareReleasesIntoHtmlTable();
             case BasicStructuresClass.STR_TS            -> HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(
                     SpecificSqLiteClass.SqLiteStatisticsSubClass.getTableStatisticsIntoListForHtmlTable(),
-                    EMPTY_TABLE_PROPS)
-                    + strSqLiteInfoBox;
+                    EMPTY_TABLE_PROPS);
             default                                     -> String.format("Welcome %s", System.getProperty("user.name"));
+        });
+    }
+
+    /**
+     * Info context handler
+     * @param page page identifier
+     * @return info Context
+     */
+    private static gg.jte.Content handleInfoContext(final String page) {
+        return output -> output.writeContent( switch (page) {
+            case BasicStructuresClass.STR_ENV_DTLS     -> HtmlClass.FileInfoSubClass.gatherFileStatistics(Path.of(ProjectClass.getPomFile()));
+            case BasicStructuresClass.STR_SOFTWARE_RLS,
+                    BasicStructuresClass.STR_TS        -> HtmlClass.FileInfoSubClass.gatherFileStatistics(Path.of(SpecificSqLiteClass.getInternalDatabase()));
+            default                                    -> "<script>document.getElementById('infoContextId').style = 'display:none;';</script>";
         });
     }
 
@@ -176,7 +186,8 @@ public final class WebClass {
         UndertowClass.TemplateRenderingSubClass.packParameter("title", title);
         final gg.jte.Content myMenu = output -> output.writeContent(HtmlClass.buildMenuString(MAP_MENU));
         UndertowClass.TemplateRenderingSubClass.packParameter("menu", myMenu);
-        UndertowClass.TemplateRenderingSubClass.packParameter("content", handleBodyContent());
+        UndertowClass.TemplateRenderingSubClass.packParameter("infoContext", handleInfoContext(page));
+        UndertowClass.TemplateRenderingSubClass.packParameter("mainContent", handleBodyContent(page));
         UndertowClass.TemplateRenderingSubClass.packCommonParameters();
     }
 

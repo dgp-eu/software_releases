@@ -21,10 +21,10 @@ import io.github.dgp_eu.tools.core.BasicStructuresClass;
 import io.github.dgp_eu.tools.core.FileOperationsClass;
 import io.github.dgp_eu.tools.core.LogExposureClass;
 import io.github.dgp_eu.tools.core.ProjectClass;
-import io.github.dgp_eu.tools.databases.DatabaseOperationsClass;
-import io.github.dgp_eu.tools.databases.SpecificSqLiteClass;
-import io.github.dgp_eu.tools.undertow.HtmlClass;
-import io.github.dgp_eu.tools.undertow.UndertowClass;
+import io.github.dgp_eu.tools.dynamic.DatabaseOperationsClass;
+import io.github.dgp_eu.tools.dynamic.HtmlClass;
+import io.github.dgp_eu.tools.dynamic.SpecificSqLiteClass;
+import io.github.dgp_eu.tools.dynamic.UndertowClass;
 import io.undertow.server.HttpHandler;
 
 /**

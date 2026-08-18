@@ -46,7 +46,7 @@
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <sonar.organization>dgp-eu</sonar.organization>
         <!-- Dependency versions -->
-        <tools.version>1.2.4-SNAPSHOT</tools.version>
+        <tools.version>1.2.4</tools.version>
         <jackson-databind.version>3.2.2</jackson-databind.version>
         <junit-jupiter.version>6.1.3</junit-jupiter.version>
         <oshi-core-ffm.version>7.5.0</oshi-core-ffm.version>
@@ -80,17 +80,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.dgp-eu</groupId>
-            <artifactId>tools-databases</artifactId>
-            <version>${tools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.dgp-eu</groupId>
-            <artifactId>tools-json</artifactId>
-            <version>${tools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.dgp-eu</groupId>
-            <artifactId>tools-undertow</artifactId>
+            <artifactId>tools-dynamic</artifactId>
             <version>${tools.version}</version>
         </dependency>
         <!-- Test dependencies -->

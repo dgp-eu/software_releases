@@ -3,8 +3,6 @@
  */
 package io.github.dgp_eu.software_releases;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -121,7 +119,7 @@ class GetInformationFromDatabase implements Runnable {
     @CommandLine.Option(
         names = { "-dbTp", "--databaseType" },
         description = "Type of Database",
-        arity = BasicStructuresClass.ARITY_ONLY_ONE,
+        arity = BasicStructuresClass.ConfigurationSubClass.ARITY_ONLY_ONE,
         required = true,
         completionCandidates = DatabaseTypes.class)
     private String strDbType;
@@ -132,7 +130,7 @@ class GetInformationFromDatabase implements Runnable {
     @CommandLine.Option(
         names = { "-infTp", "--informationType" },
         description = "Type of Information",
-        arity = BasicStructuresClass.ARITY_ONE_OR_MORE,
+        arity = BasicStructuresClass.ConfigurationSubClass.ARITY_ONE_OR_MORE,
         required = true,
         completionCandidates = InfoTypes.class)
     private String strInfoType;
@@ -159,16 +157,13 @@ class GetInformationFromDatabase implements Runnable {
 
     private static Properties getEnvironmentVariableValueForMySql() {
         final Properties properties = new Properties();
-        try (InputStream inputStream = BasicStructuresClass.getEnvironmentVariableIntoInputStream("MYSQL")) {
-            final JsonNode ndMySQL = JsonOperationsClass.getJsonFileNodes(inputStream);
-            properties.put("ServerName", JsonOperationsClass.getJsonValue(ndMySQL, "/ServerName"));
-            properties.put("Port", JsonOperationsClass.getJsonValue(ndMySQL, "/Port"));
-            properties.put("Username", JsonOperationsClass.getJsonValue(ndMySQL, "/Username"));
-            properties.put("Password", JsonOperationsClass.getJsonValue(ndMySQL, "/Password"));
-            properties.put("ServerTimezone", JsonOperationsClass.getJsonValue(ndMySQL, "/ServerTimezone"));
-        } catch (IOException ei) {
-            LogExposureClass.exposeInputOutputException("Unable to find environment variable named MYSQL", Arrays.toString(ei.getStackTrace()));
-        }
+        final String envValue = BasicStructuresClass.ConfigurationSubClass.getEnvironmentVariableValue("MYSQL");
+        final JsonNode ndMySQL = JsonOperationsClass.getJsonFileNodes(envValue);
+        properties.put("ServerName", JsonOperationsClass.getJsonValue(ndMySQL, "/ServerName"));
+        properties.put("Port", JsonOperationsClass.getJsonValue(ndMySQL, "/Port"));
+        properties.put("Username", JsonOperationsClass.getJsonValue(ndMySQL, "/Username"));
+        properties.put("Password", JsonOperationsClass.getJsonValue(ndMySQL, "/Password"));
+        properties.put("ServerTimezone", JsonOperationsClass.getJsonValue(ndMySQL, "/ServerTimezone"));
         return properties;
     }
 
@@ -242,7 +237,7 @@ class GetRemoteMavenPackageDetails implements Runnable {
         final String strFeedback3 = String.format("Retrieved attributes from header are: %s", urlAttributes);
         LogExposureClass.LOGGER.info(strFeedback3);
         final String strChecksumUrl = strRemoteFileUrl + ".sha256";
-        final String checksumValue = RemoteInformationRetrievalClass.RequestSubClass.requestHttpFile(strChecksumUrl, BasicStructuresClass.STR_CONTENT).getOrDefault(BasicStructuresClass.STR_CONTENT, "MISSING").toString().trim().toLowerCase(Locale.ENGLISH);
+        final String checksumValue = RemoteInformationRetrievalClass.RequestSubClass.requestHttpFile(strChecksumUrl, BasicStructuresClass.ConfigurationSubClass.STR_CONTENT).getOrDefault(BasicStructuresClass.ConfigurationSubClass.STR_CONTENT, "MISSING").toString().trim().toLowerCase(Locale.ENGLISH);
         final String strFeedback4 = String.format("SHA-256 from %s has content: %s", strChecksumUrl, checksumValue);
         LogExposureClass.LOGGER.info(strFeedback4);
     }

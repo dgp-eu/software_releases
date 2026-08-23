@@ -76,7 +76,7 @@ public final class OshiUsageClass {
                     strIdentifier + "Label", fileStore.getLabel(),
                     strIdentifier + "Logical Volume", fileStore.getLogicalVolume(),
                     strIdentifier + "Mount", fileStore.getMount().replace("\\", "\\\\"),
-                    strIdentifier + BasicStructuresClass.STR_NAME, fileStore.getName(),
+                    strIdentifier + BasicStructuresClass.ConfigurationSubClass.STR_NAME, fileStore.getName(),
                     strIdentifier + "Options", fileStore.getOptions(),
                     strIdentifier + "Total Space", FormatUtil.formatBytes(fileStore.getTotalSpace()),
                     strIdentifier + "Type", fileStore.getType(),
@@ -93,7 +93,7 @@ public final class OshiUsageClass {
     public static String getNetworkPhysicalMediumType(final int intPhysMedType) {
         return BasicStructuresClass.ListAndMapSubClass.getMapIntoJsonString(
                 Map.of("Numeric", intPhysMedType,
-                        BasicStructuresClass.STR_NAME, 
+                        BasicStructuresClass.ConfigurationSubClass.STR_NAME, 
                         MEDIUM_TYPES.getOrDefault(intPhysMedType, "Unknown"))
         );
     }

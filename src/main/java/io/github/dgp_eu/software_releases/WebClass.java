@@ -50,25 +50,25 @@ public final class WebClass {
      */
     private static void buildMenu() {
         MAP_MENU.put("home", Map.of(
-                BasicStructuresClass.STR_ICON, "fa-solid fa-house-user",
-                BasicStructuresClass.STR_MENU, "HomePage",
-                BasicStructuresClass.STR_TITLE, "HomePage"));
-        MAP_MENU.put(BasicStructuresClass.STR_SOFTWARE_RLS, Map.of(
-                BasicStructuresClass.STR_ICON, "fa-brands fa-dev",
-                BasicStructuresClass.STR_MENU, STR_SOFT_RELEASES,
-                BasicStructuresClass.STR_TITLE, STR_SOFT_RELEASES));
-        MAP_MENU.put(BasicStructuresClass.STR_TS, Map.of(
-                BasicStructuresClass.STR_ICON, "fa-solid fa-square-poll-horizontal",
-                BasicStructuresClass.STR_MENU, "SQLite Table Statistics",
-                BasicStructuresClass.STR_TITLE, "SQLite Table Statistics"));
-        MAP_MENU.put(BasicStructuresClass.STR_FILE_HASHING, Map.of(
-                BasicStructuresClass.STR_ICON, "fa-solid fa-hashtag",
-                BasicStructuresClass.STR_MENU, "Downloads File Hashing",
-                BasicStructuresClass.STR_TITLE, "Downloads File Hashing"));
-        MAP_MENU.put(BasicStructuresClass.STR_ENV_DTLS, Map.of(
-                BasicStructuresClass.STR_ICON, "fa-solid fa-computer",
-                BasicStructuresClass.STR_MENU, "Environment Details",
-                BasicStructuresClass.STR_TITLE, "Environment Details"));
+                BasicStructuresClass.ConfigurationSubClass.STR_ICON, "fa-solid fa-house-user",
+                BasicStructuresClass.ConfigurationSubClass.STR_MENU, "HomePage",
+                BasicStructuresClass.ConfigurationSubClass.STR_TITLE, "HomePage"));
+        MAP_MENU.put(BasicStructuresClass.ConfigurationSubClass.STR_SOFTWARE_RLS, Map.of(
+                BasicStructuresClass.ConfigurationSubClass.STR_ICON, "fa-brands fa-dev",
+                BasicStructuresClass.ConfigurationSubClass.STR_MENU, STR_SOFT_RELEASES,
+                BasicStructuresClass.ConfigurationSubClass.STR_TITLE, STR_SOFT_RELEASES));
+        MAP_MENU.put(BasicStructuresClass.ConfigurationSubClass.STR_TS, Map.of(
+                BasicStructuresClass.ConfigurationSubClass.STR_ICON, "fa-solid fa-square-poll-horizontal",
+                BasicStructuresClass.ConfigurationSubClass.STR_MENU, "SQLite Table Statistics",
+                BasicStructuresClass.ConfigurationSubClass.STR_TITLE, "SQLite Table Statistics"));
+        MAP_MENU.put(BasicStructuresClass.ConfigurationSubClass.STR_FILE_HASHING, Map.of(
+                BasicStructuresClass.ConfigurationSubClass.STR_ICON, "fa-solid fa-hashtag",
+                BasicStructuresClass.ConfigurationSubClass.STR_MENU, "Downloads File Hashing",
+                BasicStructuresClass.ConfigurationSubClass.STR_TITLE, "Downloads File Hashing"));
+        MAP_MENU.put(BasicStructuresClass.ConfigurationSubClass.STR_ENV_DTLS, Map.of(
+                BasicStructuresClass.ConfigurationSubClass.STR_ICON, "fa-solid fa-computer",
+                BasicStructuresClass.ConfigurationSubClass.STR_MENU, "Environment Details",
+                BasicStructuresClass.ConfigurationSubClass.STR_TITLE, "Environment Details"));
     }
 
     /**
@@ -77,7 +77,7 @@ public final class WebClass {
      */
     public static String getEnvironmentDetailsAsHtmlTable() {
         final Properties objFeatures = new Properties();
-        objFeatures.put(BasicStructuresClass.STR_NEW_TAB, "Category");
+        objFeatures.put(BasicStructuresClass.ConfigurationSubClass.STR_NEW_TAB, "Category");
         final List<Properties> envDetails = EnvironmentCapturingAssembleClass.packageCurrentEnvironmentDetailsIntoListOfProperties();
         final List<String> desiredOrder = List.of("Category", "Element", "Value");
         final List<SequencedMap<Object, Object>> orderedList = envDetails.stream()
@@ -119,7 +119,7 @@ public final class WebClass {
                     .map(prop -> BasicStructuresClass.ListAndMapSubClass.sortProperties(prop, desiredOrder))
                     .toList();
             final Properties objFeatures = new Properties();
-            objFeatures.put(BasicStructuresClass.STR_NEW_TAB, "Profile");
+            objFeatures.put(BasicStructuresClass.ConfigurationSubClass.STR_NEW_TAB, "Profile");
             strReturn = HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(orderedList, objFeatures);
         }
         return strReturn;
@@ -132,10 +132,10 @@ public final class WebClass {
      */
     public static gg.jte.Content handleBodyContent(final String page) {
         return output -> output.writeContent(switch(page) {
-            case BasicStructuresClass.STR_ENV_DTLS      -> getEnvironmentDetailsAsHtmlTable();
-            case BasicStructuresClass.STR_FILE_HASHING  -> getFileHashingAsHtmlTable();
-            case BasicStructuresClass.STR_SOFTWARE_RLS  -> getSoftwareReleasesIntoHtmlTable();
-            case BasicStructuresClass.STR_TS            -> HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(
+            case BasicStructuresClass.ConfigurationSubClass.STR_ENV_DTLS      -> getEnvironmentDetailsAsHtmlTable();
+            case BasicStructuresClass.ConfigurationSubClass.STR_FILE_HASHING  -> getFileHashingAsHtmlTable();
+            case BasicStructuresClass.ConfigurationSubClass.STR_SOFTWARE_RLS  -> getSoftwareReleasesIntoHtmlTable();
+            case BasicStructuresClass.ConfigurationSubClass.STR_TS            -> HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(
                     SpecificSqLiteClass.SqLiteStatisticsSubClass.getTableStatisticsIntoListForHtmlTable(),
                     EMPTY_TABLE_PROPS);
             default                                     -> String.format("Welcome %s", System.getProperty("user.name"));
@@ -149,9 +149,9 @@ public final class WebClass {
      */
     private static gg.jte.Content handleInfoContext(final String page) {
         return output -> output.writeContent( switch (page) {
-            case BasicStructuresClass.STR_ENV_DTLS     -> HtmlClass.FileInfoSubClass.gatherFileStatistics(Path.of(ProjectClass.getPomFile()));
-            case BasicStructuresClass.STR_SOFTWARE_RLS,
-                    BasicStructuresClass.STR_TS        -> HtmlClass.FileInfoSubClass.gatherFileStatistics(Path.of(SpecificSqLiteClass.getInternalDatabase()));
+            case BasicStructuresClass.ConfigurationSubClass.STR_ENV_DTLS     -> HtmlClass.FileInfoSubClass.gatherFileStatistics(Path.of(ProjectClass.getPomFile()));
+            case BasicStructuresClass.ConfigurationSubClass.STR_SOFTWARE_RLS,
+                    BasicStructuresClass.ConfigurationSubClass.STR_TS        -> HtmlClass.FileInfoSubClass.gatherFileStatistics(Path.of(SpecificSqLiteClass.getInternalDatabase()));
             default                                    -> "<script>document.getElementById('infoContextId').style = 'display:none;';</script>";
         });
     }
@@ -179,9 +179,9 @@ public final class WebClass {
         final String page = UndertowClass.ParametersSubClass.getPageParameter();
         UndertowClass.TemplateRenderingSubClass.packParameter("page", page);
         String title = page;
-        if (!BasicStructuresClass.STR_LOCALIZATION.equalsIgnoreCase(page)) {
+        if (!BasicStructuresClass.ConfigurationSubClass.STR_LOCALIZATION.equalsIgnoreCase(page)) {
             final Map<String, String> menuEntry = MAP_MENU.get(page);
-            title = menuEntry != null ? menuEntry.getOrDefault(BasicStructuresClass.STR_TITLE, page) : page;
+            title = menuEntry != null ? menuEntry.getOrDefault(BasicStructuresClass.ConfigurationSubClass.STR_TITLE, page) : page;
         }
         UndertowClass.TemplateRenderingSubClass.packParameter("title", title);
         final gg.jte.Content myMenu = output -> output.writeContent(HtmlClass.buildMenuString(MAP_MENU));
@@ -242,10 +242,10 @@ public final class WebClass {
                     newProperties.put("Profile",
                             recordProperties.get("Profile Name"));
                     String lastRlsAgingDays = String.valueOf(recordProperties.get("Latest release aging days"));
-                    if (BasicStructuresClass.STR_NULL.equals(lastRlsAgingDays)) {
+                    if (BasicStructuresClass.ConfigurationSubClass.STR_NULL.equals(lastRlsAgingDays)) {
                         lastRlsAgingDays = "";
                     }
-                    newProperties.put(BasicStructuresClass.STR_ROW_STYLE,
+                    newProperties.put(BasicStructuresClass.ConfigurationSubClass.STR_ROW_STYLE,
                             establishRowStyle(lastRlsAgingDays.replaceAll("\\.0$", "")));
                     softwareReleases.add(newProperties);
                 });
@@ -281,12 +281,12 @@ public final class WebClass {
         private static List<Properties> getSoftwareReleasesFromDatabase() {
             List<Properties> resultReleases = new ArrayList<>();
             try (Connection objConnection = SpecificSqLiteClass.getSqLiteConnection();
-                 Statement objStatement = DatabaseOperationsClass.ConnectivitySubClass.createSqlStatement(BasicStructuresClass.STR_SQLITE, objConnection)) {
-                final String queryToUse = DatabaseOperationsClass.getPreDefinedQuery(BasicStructuresClass.STR_SQLITE, "ReleasesListProductBranches");
+                 Statement objStatement = DatabaseOperationsClass.ConnectivitySubClass.createSqlStatement(BasicStructuresClass.ConfigurationSubClass.STR_SQLITE, objConnection)) {
+                final String queryToUse = DatabaseOperationsClass.getPreDefinedQuery(BasicStructuresClass.ConfigurationSubClass.STR_SQLITE, "ReleasesListProductBranches");
                 final Properties rsProperties = DatabaseOperationsClass.packageResultSetProperties(STR_SOFT_RELEASES, queryToUse);
                 resultReleases = DatabaseOperationsClass.ResultSettingSubClass.getResultSetStandardized(objStatement, rsProperties, new Properties());
             } catch (SQLException e) {
-                final String strFeedbackErr = String.format("%s connection has failed %s", BasicStructuresClass.STR_SQLITE, e.getLocalizedMessage());
+                final String strFeedbackErr = String.format("%s connection has failed %s", BasicStructuresClass.ConfigurationSubClass.STR_SQLITE, e.getLocalizedMessage());
                 LogExposureClass.LOGGER.debug(strFeedbackErr);
             }
             return resultReleases;

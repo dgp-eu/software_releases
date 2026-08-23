@@ -251,11 +251,11 @@ public final class RemoteInformationRetrievalClass {
                             fileProperties.putAll(headerAttributes);
                         }
                         break;
-                    case BasicStructuresClass.STR_CONTENT:
+                    case BasicStructuresClass.ConfigurationSubClass.STR_CONTENT:
                         final String fileContent = getRemoteFileContent(strRemoteFileUrl, builder);
                         if (fileContent != null
                                 && !fileContent.isBlank()) {
-                            fileProperties.put(BasicStructuresClass.STR_CONTENT, fileContent);
+                            fileProperties.put(BasicStructuresClass.ConfigurationSubClass.STR_CONTENT, fileContent);
                         }
                         break;
                     default:

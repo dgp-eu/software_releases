@@ -28,7 +28,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import io.github.dgp_eu.tools.core.BasicStructuresClass;
+import io.github.dgp_eu.tools.core.ConfigurationClass;
 import io.github.dgp_eu.tools.core.LogExposureClass;
 import io.github.dgp_eu.tools.core.RegularExpressionsClass;
 import io.github.dgp_eu.tools.core.TimingClass;
@@ -251,11 +251,11 @@ public final class RemoteInformationRetrievalClass {
                             fileProperties.putAll(headerAttributes);
                         }
                         break;
-                    case BasicStructuresClass.ConfigurationSubClass.STR_CONTENT:
+                    case ConfigurationClass.STR_CONTENT:
                         final String fileContent = getRemoteFileContent(strRemoteFileUrl, builder);
                         if (fileContent != null
                                 && !fileContent.isBlank()) {
-                            fileProperties.put(BasicStructuresClass.ConfigurationSubClass.STR_CONTENT, fileContent);
+                            fileProperties.put(ConfigurationClass.STR_CONTENT, fileContent);
                         }
                         break;
                     default:

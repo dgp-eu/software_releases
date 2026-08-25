@@ -10,7 +10,7 @@ import java.util.Locale;
 import java.util.Properties;
 
 import io.github.dgp_eu.tools.core.CommonInteractiveClass;
-import io.github.dgp_eu.tools.core.BasicStructuresClass;
+import io.github.dgp_eu.tools.core.ConfigurationClass;
 import io.github.dgp_eu.tools.core.FileOperationsClass;
 import io.github.dgp_eu.tools.core.LogExposureClass;
 import io.github.dgp_eu.tools.core.RegularExpressionsClass;
@@ -119,7 +119,7 @@ class GetInformationFromDatabase implements Runnable {
     @CommandLine.Option(
         names = { "-dbTp", "--databaseType" },
         description = "Type of Database",
-        arity = BasicStructuresClass.ConfigurationSubClass.ARITY_ONLY_ONE,
+        arity = ConfigurationClass.ARITY_ONLY_ONE,
         required = true,
         completionCandidates = DatabaseTypes.class)
     private String strDbType;
@@ -130,7 +130,7 @@ class GetInformationFromDatabase implements Runnable {
     @CommandLine.Option(
         names = { "-infTp", "--informationType" },
         description = "Type of Information",
-        arity = BasicStructuresClass.ConfigurationSubClass.ARITY_ONE_OR_MORE,
+        arity = ConfigurationClass.ARITY_ONE_OR_MORE,
         required = true,
         completionCandidates = InfoTypes.class)
     private String strInfoType;
@@ -157,7 +157,7 @@ class GetInformationFromDatabase implements Runnable {
 
     private static Properties getEnvironmentVariableValueForMySql() {
         final Properties properties = new Properties();
-        final String envValue = BasicStructuresClass.ConfigurationSubClass.getEnvironmentVariableValue("MYSQL");
+        final String envValue = ConfigurationClass.getEnvironmentVariableValue("MYSQL");
         final JsonNode ndMySQL = JsonOperationsClass.getJsonFileNodes(envValue);
         properties.put("ServerName", JsonOperationsClass.getJsonValue(ndMySQL, "/ServerName"));
         properties.put("Port", JsonOperationsClass.getJsonValue(ndMySQL, "/Port"));
@@ -237,7 +237,7 @@ class GetRemoteMavenPackageDetails implements Runnable {
         final String strFeedback3 = String.format("Retrieved attributes from header are: %s", urlAttributes);
         LogExposureClass.LOGGER.info(strFeedback3);
         final String strChecksumUrl = strRemoteFileUrl + ".sha256";
-        final String checksumValue = RemoteInformationRetrievalClass.RequestSubClass.requestHttpFile(strChecksumUrl, BasicStructuresClass.ConfigurationSubClass.STR_CONTENT).getOrDefault(BasicStructuresClass.ConfigurationSubClass.STR_CONTENT, "MISSING").toString().trim().toLowerCase(Locale.ENGLISH);
+        final String checksumValue = RemoteInformationRetrievalClass.RequestSubClass.requestHttpFile(strChecksumUrl, ConfigurationClass.STR_CONTENT).getOrDefault(ConfigurationClass.STR_CONTENT, "MISSING").toString().trim().toLowerCase(Locale.ENGLISH);
         final String strFeedback4 = String.format("SHA-256 from %s has content: %s", strChecksumUrl, checksumValue);
         LogExposureClass.LOGGER.info(strFeedback4);
     }

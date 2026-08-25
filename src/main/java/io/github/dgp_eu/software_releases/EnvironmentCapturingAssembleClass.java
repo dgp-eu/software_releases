@@ -9,6 +9,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.github.dgp_eu.tools.core.BasicStructuresClass;
+import io.github.dgp_eu.tools.core.ConfigurationClass;
 import io.github.dgp_eu.tools.core.LogExposureClass;
 import io.github.dgp_eu.tools.core.ProjectClass;
 import io.github.dgp_eu.tools.core.ShellingClass;
@@ -85,8 +86,8 @@ public final class EnvironmentCapturingAssembleClass {
                 "Release", System.getProperty("java.vendor.version"),
                 "Runtime Name", System.getProperty("java.runtime.name"),
                 "Runtime Version", System.getProperty("java.runtime.version"),
-                BasicStructuresClass.ConfigurationSubClass.STR_VENDOR, System.getProperty("java.vendor"),
-                BasicStructuresClass.ConfigurationSubClass.STR_VERSION, System.getProperty("java.version"),
+                ConfigurationClass.STR_VENDOR, System.getProperty("java.vendor"),
+                ConfigurationClass.STR_VERSION, System.getProperty("java.version"),
                 "Version Date", System.getProperty("java.version.date"),
                 "VM Name", System.getProperty("java.vm.name"),
                 "VM Version", System.getProperty("java.vm.version"),
@@ -216,25 +217,25 @@ public final class EnvironmentCapturingAssembleClass {
                 final String strSlimLine = crtLine.trim();
                 if (strSlimLine.endsWith(" in") && strSlimLine.contains(" cm ")) {
                     final int intCmPos = strSlimLine.indexOf(" cm ");
-                    arrayAttributes.put(BasicStructuresClass.ConfigurationSubClass.STR_PHYSC_DIM + " [in]", strSlimLine.substring(0, intCmPos));
+                    arrayAttributes.put(ConfigurationClass.STR_PHYSC_DIM + " [in]", strSlimLine.substring(0, intCmPos));
                     final int intInPos = strSlimLine.indexOf(" in");
-                    arrayAttributes.put(BasicStructuresClass.ConfigurationSubClass.STR_PHYSC_DIM + " [cm]", strSlimLine.substring(intCmPos + 4, intInPos));
+                    arrayAttributes.put(ConfigurationClass.STR_PHYSC_DIM + " [cm]", strSlimLine.substring(intCmPos + 4, intInPos));
                 }
-                if (strSlimLine.startsWith(BasicStructuresClass.ConfigurationSubClass.STR_MONITOR_NAME)) {
-                    arrayAttributes.put(BasicStructuresClass.ConfigurationSubClass.STR_MONITOR_NAME, strSlimLine.replace(BasicStructuresClass.ConfigurationSubClass.STR_MONITOR_NAME + " ", ""));
+                if (strSlimLine.startsWith(ConfigurationClass.STR_MONITOR_NAME)) {
+                    arrayAttributes.put(ConfigurationClass.STR_MONITOR_NAME, strSlimLine.replace(ConfigurationClass.STR_MONITOR_NAME + " ", ""));
                 }
-                if (strSlimLine.startsWith(BasicStructuresClass.ConfigurationSubClass.STR_PRFRD_TM_CLCK)) {
-                    final int intClockLen = BasicStructuresClass.ConfigurationSubClass.STR_PRFRD_TM_CLCK.length();
-                    final int intPixelPos = strSlimLine.indexOf(BasicStructuresClass.ConfigurationSubClass.STR_ACTV_PXLS);
-                    arrayAttributes.put(BasicStructuresClass.ConfigurationSubClass.STR_PRFRD_TM_CLCK, strSlimLine.substring(intClockLen, intPixelPos).trim());
-                    arrayAttributes.put(BasicStructuresClass.ConfigurationSubClass.STR_ACTV_PXLS, strSlimLine.substring(intPixelPos)
-                            .replace(BasicStructuresClass.ConfigurationSubClass.STR_ACTV_PXLS + " ", "").trim());
+                if (strSlimLine.startsWith(ConfigurationClass.STR_PRFRD_TM_CLCK)) {
+                    final int intClockLen = ConfigurationClass.STR_PRFRD_TM_CLCK.length();
+                    final int intPixelPos = strSlimLine.indexOf(ConfigurationClass.STR_ACTV_PXLS);
+                    arrayAttributes.put(ConfigurationClass.STR_PRFRD_TM_CLCK, strSlimLine.substring(intClockLen, intPixelPos).trim());
+                    arrayAttributes.put(ConfigurationClass.STR_ACTV_PXLS, strSlimLine.substring(intPixelPos)
+                            .replace(ConfigurationClass.STR_ACTV_PXLS + " ", "").trim());
                 }
-                if (strSlimLine.startsWith(BasicStructuresClass.ConfigurationSubClass.STR_RANGE_LMTS)) {
-                    arrayAttributes.put(BasicStructuresClass.ConfigurationSubClass.STR_RANGE_LMTS, strSlimLine.replace(BasicStructuresClass.ConfigurationSubClass.STR_RANGE_LMTS + " ", ""));
+                if (strSlimLine.startsWith(ConfigurationClass.STR_RANGE_LMTS)) {
+                    arrayAttributes.put(ConfigurationClass.STR_RANGE_LMTS, strSlimLine.replace(ConfigurationClass.STR_RANGE_LMTS + " ", ""));
                 }
-                if (strSlimLine.startsWith(BasicStructuresClass.ConfigurationSubClass.STR_SRL_NUM)) {
-                    arrayAttributes.put(BasicStructuresClass.ConfigurationSubClass.STR_SRL_NUM, strSlimLine.replace(BasicStructuresClass.ConfigurationSubClass.STR_SRL_NUM + " ", ""));
+                if (strSlimLine.startsWith(ConfigurationClass.STR_SRL_NUM)) {
+                    arrayAttributes.put(ConfigurationClass.STR_SRL_NUM, strSlimLine.replace(ConfigurationClass.STR_SRL_NUM + " ", ""));
                 }
             }
             return arrayAttributes;
@@ -256,11 +257,11 @@ public final class EnvironmentCapturingAssembleClass {
                     "Feature Flags", featureFlags.toString().replace("[", "[\"").replace(", ", "\", \"").replace("]", "\"]"),
                     "Logical Processors", processor.getLogicalProcessorCount(),
                     "Maximum Frequency", FormatUtil.formatHertz(processor.getMaxFreq()),
-                    BasicStructuresClass.ConfigurationSubClass.STR_MODEL, procIdentif.getModel(),
-                    BasicStructuresClass.ConfigurationSubClass.STR_NAME, procIdentif.getName(),
+                    ConfigurationClass.STR_MODEL, procIdentif.getModel(),
+                    ConfigurationClass.STR_NAME, procIdentif.getName(),
                     "Processor ID", procIdentif.getProcessorID(),
                     "Physical Processors", processor.getPhysicalProcessorCount(),
-                    BasicStructuresClass.ConfigurationSubClass.STR_VENDOR, procIdentif.getVendor());
+                    ConfigurationClass.STR_VENDOR, procIdentif.getVendor());
         }
 
         /**
@@ -274,8 +275,8 @@ public final class EnvironmentCapturingAssembleClass {
             for (final GraphicsCard  graphicCard : graphicCards) {
                 final String strIdentifier = "Video Card ID#" + BasicStructuresClass.StringTransformationSubClass.computeStringSignature(graphicCard.getName()) + " ";
                 arrayAttributes.putAll(Map.of(
-                        strIdentifier + BasicStructuresClass.ConfigurationSubClass.STR_NAME, graphicCard.getName(),
-                        strIdentifier + BasicStructuresClass.ConfigurationSubClass.STR_VENDOR, graphicCard.getVendor(),
+                        strIdentifier + ConfigurationClass.STR_NAME, graphicCard.getName(),
+                        strIdentifier + ConfigurationClass.STR_VENDOR, graphicCard.getVendor(),
                         strIdentifier + "VRAM", FormatUtil.formatBytes(graphicCard.getVRam()),
                         strIdentifier + "Driver Version", graphicCard.getVersionInfo()
                 ));
@@ -336,7 +337,7 @@ public final class EnvironmentCapturingAssembleClass {
                 if (expose) {
                     final String strIdentifier = "Memory MAC#" + net.getMacaddr() + " ";
                     arrayAttributes.putAll(Map.of(
-                            strIdentifier + BasicStructuresClass.ConfigurationSubClass.STR_NAME, net.getName(),
+                            strIdentifier + ConfigurationClass.STR_NAME, net.getName(),
                             strIdentifier + "Display Name", net.getDisplayName(),
                             strIdentifier + "IPv4", String.join(", ", addressIPV4),
                             strIdentifier + "IPv6", String.join(", ", addressIPV6),
@@ -360,10 +361,10 @@ public final class EnvironmentCapturingAssembleClass {
                     "Build", version.getBuildNumber(),
                     "Code", version.getCodeName(),
                     "Family", OshiUsageClass.SoftwareSubClass.getOshiFamily(),
-                    BasicStructuresClass.ConfigurationSubClass.STR_MANUFACTURER, OshiUsageClass.SoftwareSubClass.getOshiManufacturer(),
-                    BasicStructuresClass.ConfigurationSubClass.STR_NAME, System.getProperty("os.name"),
+                    ConfigurationClass.STR_MANUFACTURER, OshiUsageClass.SoftwareSubClass.getOshiManufacturer(),
+                    ConfigurationClass.STR_NAME, System.getProperty("os.name"),
                     "Platform", PlatformEnum.getCurrentPlatform().toString(),
-                    BasicStructuresClass.ConfigurationSubClass.STR_VERSION, version.getVersion());
+                    ConfigurationClass.STR_VERSION, version.getVersion());
         }
 
         /**
@@ -388,7 +389,7 @@ public final class EnvironmentCapturingAssembleClass {
                         strIdentifier + "Bank/Slot Label", physicalMemory.getBankLabel(),
                         strIdentifier + "Capacity", FormatUtil.formatBytes(physicalMemory.getCapacity()),
                         strIdentifier + "Clock Speed", FormatUtil.formatHertz(physicalMemory.getClockSpeed()),
-                        strIdentifier + BasicStructuresClass.ConfigurationSubClass.STR_MANUFACTURER, physicalMemory.getManufacturer(),
+                        strIdentifier + ConfigurationClass.STR_MANUFACTURER, physicalMemory.getManufacturer(),
                         strIdentifier + "Type", physicalMemory.getMemoryType(),
                         strIdentifier + "Part Number", physicalMemory.getPartNumber().trim()));
             }
@@ -414,9 +415,9 @@ public final class EnvironmentCapturingAssembleClass {
             private static Map<String, Object> getDetailsAboutComputerSystemIntoMap() {
                 final ComputerSystem computerSystem = OshiUsageClass.HardwareSubClass.getOshiComputerSystem();
                 return Map.of(
-                        BasicStructuresClass.ConfigurationSubClass.STR_SYSTEM + " " + BasicStructuresClass.ConfigurationSubClass.STR_MANUFACTURER, computerSystem.getManufacturer(),
-                        BasicStructuresClass.ConfigurationSubClass.STR_SYSTEM + " " + BasicStructuresClass.ConfigurationSubClass.STR_MODEL, computerSystem.getModel(),
-                        BasicStructuresClass.ConfigurationSubClass.STR_SYSTEM + " " + BasicStructuresClass.ConfigurationSubClass.STR_SRL_NUM, computerSystem.getSerialNumber());
+                        ConfigurationClass.STR_SYSTEM + " " + ConfigurationClass.STR_MANUFACTURER, computerSystem.getManufacturer(),
+                        ConfigurationClass.STR_SYSTEM + " " + ConfigurationClass.STR_MODEL, computerSystem.getModel(),
+                        ConfigurationClass.STR_SYSTEM + " " + ConfigurationClass.STR_SRL_NUM, computerSystem.getSerialNumber());
             }
 
             /**
@@ -426,11 +427,11 @@ public final class EnvironmentCapturingAssembleClass {
             private static Map<String, Object> getDetailsAboutFirmwareIntoMap() {
                 final Firmware firmware = OshiUsageClass.HardwareSubClass.getOshiFirmware();
                 return Map.of(
-                        BasicStructuresClass.ConfigurationSubClass.STR_FIRMWARE + " " + BasicStructuresClass.ConfigurationSubClass.STR_MANUFACTURER, firmware.getManufacturer(),
-                        BasicStructuresClass.ConfigurationSubClass.STR_FIRMWARE + " " + "Name", firmware.getName(),
-                        BasicStructuresClass.ConfigurationSubClass.STR_FIRMWARE + " " + "Description", firmware.getDescription(),
-                        BasicStructuresClass.ConfigurationSubClass.STR_FIRMWARE + " " + BasicStructuresClass.ConfigurationSubClass.STR_VERSION, firmware.getVersion(),
-                        BasicStructuresClass.ConfigurationSubClass.STR_FIRMWARE + " " + "Release Date", firmware.getReleaseDate() == null ? "unknown" : firmware.getReleaseDate());
+                        ConfigurationClass.STR_FIRMWARE + " " + ConfigurationClass.STR_MANUFACTURER, firmware.getManufacturer(),
+                        ConfigurationClass.STR_FIRMWARE + " " + "Name", firmware.getName(),
+                        ConfigurationClass.STR_FIRMWARE + " " + "Description", firmware.getDescription(),
+                        ConfigurationClass.STR_FIRMWARE + " " + ConfigurationClass.STR_VERSION, firmware.getVersion(),
+                        ConfigurationClass.STR_FIRMWARE + " " + "Release Date", firmware.getReleaseDate() == null ? "unknown" : firmware.getReleaseDate());
             }
 
             /**
@@ -451,10 +452,10 @@ public final class EnvironmentCapturingAssembleClass {
             private static Map<String, Object> getDetailsAboutMotherboardIntoMap() {
                 final Baseboard baseboard = OshiUsageClass.HardwareSubClass.getOshiMotherboard();
                 return Map.of(
-                        BasicStructuresClass.ConfigurationSubClass.STR_MAINBOARD + " " + BasicStructuresClass.ConfigurationSubClass.STR_MANUFACTURER, baseboard.getManufacturer(),
-                        BasicStructuresClass.ConfigurationSubClass.STR_MAINBOARD + " " + BasicStructuresClass.ConfigurationSubClass.STR_MODEL, baseboard.getModel(),
-                        BasicStructuresClass.ConfigurationSubClass.STR_MAINBOARD + " " + BasicStructuresClass.ConfigurationSubClass.STR_VERSION, baseboard.getVersion(),
-                        BasicStructuresClass.ConfigurationSubClass.STR_MAINBOARD + " " + BasicStructuresClass.ConfigurationSubClass.STR_SRL_NUM, baseboard.getSerialNumber());
+                        ConfigurationClass.STR_MAINBOARD + " " + ConfigurationClass.STR_MANUFACTURER, baseboard.getManufacturer(),
+                        ConfigurationClass.STR_MAINBOARD + " " + ConfigurationClass.STR_MODEL, baseboard.getModel(),
+                        ConfigurationClass.STR_MAINBOARD + " " + ConfigurationClass.STR_VERSION, baseboard.getVersion(),
+                        ConfigurationClass.STR_MAINBOARD + " " + ConfigurationClass.STR_SRL_NUM, baseboard.getSerialNumber());
             }
         }
 

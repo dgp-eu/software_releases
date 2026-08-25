@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.github.dgp_eu.tools.core.BasicStructuresClass;
+import io.github.dgp_eu.tools.core.ConfigurationClass;
 import oshi.ffm.SystemInfo;
 import oshi.hardware.Baseboard;
 import oshi.hardware.CentralProcessor;
@@ -76,7 +77,7 @@ public final class OshiUsageClass {
                     strIdentifier + "Label", fileStore.getLabel(),
                     strIdentifier + "Logical Volume", fileStore.getLogicalVolume(),
                     strIdentifier + "Mount", fileStore.getMount().replace("\\", "\\\\"),
-                    strIdentifier + BasicStructuresClass.ConfigurationSubClass.STR_NAME, fileStore.getName(),
+                    strIdentifier + ConfigurationClass.STR_NAME, fileStore.getName(),
                     strIdentifier + "Options", fileStore.getOptions(),
                     strIdentifier + "Total Space", FormatUtil.formatBytes(fileStore.getTotalSpace()),
                     strIdentifier + "Type", fileStore.getType(),
@@ -93,7 +94,7 @@ public final class OshiUsageClass {
     public static String getNetworkPhysicalMediumType(final int intPhysMedType) {
         return BasicStructuresClass.ListAndMapSubClass.getMapIntoJsonString(
                 Map.of("Numeric", intPhysMedType,
-                        BasicStructuresClass.ConfigurationSubClass.STR_NAME, 
+                        ConfigurationClass.STR_NAME, 
                         MEDIUM_TYPES.getOrDefault(intPhysMedType, "Unknown"))
         );
     }

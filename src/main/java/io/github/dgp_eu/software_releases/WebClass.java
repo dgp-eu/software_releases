@@ -5,6 +5,8 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -97,7 +99,10 @@ public final class WebClass {
         final String[] folderNames = Arrays.copyOf(strFolderNames, strFolderNames.length);
         final List<Properties> foldersStatistics = new ArrayList<>();
         for(final String crtFolderName: folderNames) {
-            final List<Properties> crtFileStatistics = FileOperationsClass.StatisticsSubClass.getFileStatisticsIntoListOfProperties(crtFolderName);
+            final String strFeedback = String.format("Will process folder %s", crtFolderName);
+            LogExposureClass.LOGGER.info(strFeedback);
+            final ZonedDateTime refTimeStamp = ZonedDateTime.now(ZoneId.systemDefault());
+            final List<Properties> crtFileStatistics = FileOperationsClass.StatisticsSubClass.getFileStatisticsIntoListOfProperties(crtFolderName, refTimeStamp);
             foldersStatistics.addAll(crtFileStatistics);
         }
         final List<String> desiredOrder = List.of("Folder", "File", "Size [bytes]", "Size", "SHA-256", "Last Modified Timestamp", "Last Modified Aging");

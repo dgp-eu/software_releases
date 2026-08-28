@@ -343,7 +343,7 @@ public final class EnvironmentCapturingAssembleClass {
                             strIdentifier + "IPv6", String.join(", ", addressIPV6),
                             strIdentifier + "MTU", net.getMTU(),
                             strIdentifier + "NDIS Physical Medium Type", OshiUsageClass.getNetworkPhysicalMediumType(net.getNdisPhysicalMediumType()),
-                            strIdentifier + "Status", status,
+                            strIdentifier + ConfigurationClass.STR_STATUS, status,
                             strIdentifier + "Speed", FormatUtil.formatBytes(net.getSpeed())));
                 }
             }

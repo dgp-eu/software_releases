@@ -35,6 +35,12 @@
         </developer>
     </developers>
 
+    <scm>
+        <connection>scm:git:https://github.com/dgp-eu/software_releases.git</connection>
+        <developerConnection>scm:git:ssh://github.com/dgp-eu/software_releases.git</developerConnection>
+        <url>https://github.com/dgp-eu/software_releases</url>
+    </scm>
+
     <properties>
         <!-- File encoding properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

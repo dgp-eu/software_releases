@@ -15,9 +15,9 @@ import io.github.dgp_eu.tools.core.FileOperationsClass;
 import io.github.dgp_eu.tools.core.LogExposureClass;
 import io.github.dgp_eu.tools.core.RegularExpressionsClass;
 import io.github.dgp_eu.tools.dynamic.JsonOperationsClass;
-import io.github.dgp_eu.tools.dynamic.SpecificMySqlClass;
-import io.github.dgp_eu.tools.dynamic.SpecificSnowflakeClass;
-import io.github.dgp_eu.tools.dynamic.SpecificSqLiteClass;
+import io.github.dgp_eu.tools.dynamic.DatabaseSpecificMySqlClass;
+import io.github.dgp_eu.tools.dynamic.DatabaseSpecificSnowflakeClass;
+import io.github.dgp_eu.tools.dynamic.DatabaseSpecificSqLiteClass;
 import io.github.dgp_eu.tools.dynamic.UndertowClass;
 import picocli.CommandLine;
 import picocli.CommandLine.Mixin;
@@ -119,7 +119,7 @@ class GetInformationFromDatabase implements Runnable {
     @CommandLine.Option(
         names = { "-dbTp", "--databaseType" },
         description = "Type of Database",
-        arity = ConfigurationClass.ARITY_ONLY_ONE,
+        arity = CommonInteractiveClass.ARITY_ONLY_ONE,
         required = true,
         completionCandidates = DatabaseTypes.class)
     private String strDbType;
@@ -130,7 +130,7 @@ class GetInformationFromDatabase implements Runnable {
     @CommandLine.Option(
         names = { "-infTp", "--informationType" },
         description = "Type of Information",
-        arity = ConfigurationClass.ARITY_ONE_OR_MORE,
+        arity = CommonInteractiveClass.ARITY_ONE_OR_MORE,
         required = true,
         completionCandidates = InfoTypes.class)
     private String strInfoType;
@@ -177,10 +177,10 @@ class GetInformationFromDatabase implements Runnable {
         switch (strDatabaseType) {
             case "MySQL":
                 properties = getEnvironmentVariableValueForMySql();
-                SpecificMySqlClass.performMySqlPreDefinedAction(strLclInfoType, properties);
+                DatabaseSpecificMySqlClass.performMySqlPreDefinedAction(strLclInfoType, properties);
                 break;
             case "Snowflake":
-                SpecificSnowflakeClass.performSnowflakePreDefinedAction(strLclInfoType, properties);
+                DatabaseSpecificSnowflakeClass.performSnowflakePreDefinedAction(strLclInfoType, properties);
                 break;
             default:
                 final String strFeedback = String.format("Unknown %s argument received in %s, do not know what to do with it, therefore will quit, bye!", strDatabaseType, StackWalker.getInstance().walk(frames -> frames.findFirst().map(frame -> frame.getClassName() + "." + frame.getMethodName()).orElse(LogExposureClass.STR_I18N_UNKN)));
@@ -282,7 +282,7 @@ class WebUserInterface implements Runnable {
     @Override
     public void run() {
         UndertowClass.setWebPort(String.valueOf(optPortNumber.getPortNumber()));
-        SpecificSqLiteClass.setInternalDatabase(optLocalDbFile.getLocalDbFile());
+        DatabaseSpecificSqLiteClass.setInternalDatabase(optLocalDbFile.getLocalDbFile());
         WebClass.setFolderNamesForChecksumExposure(optFolderNames.getFolderNames());
         UndertowClass.setRootHandler(WebClass.handleWebContent());
         UndertowClass.runWebServer();

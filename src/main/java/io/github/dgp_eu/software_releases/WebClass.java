@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -24,9 +25,10 @@ import io.github.dgp_eu.tools.core.ConfigurationClass;
 import io.github.dgp_eu.tools.core.FileOperationsClass;
 import io.github.dgp_eu.tools.core.LogExposureClass;
 import io.github.dgp_eu.tools.core.ProjectClass;
+import io.github.dgp_eu.tools.core.TimingClass;
 import io.github.dgp_eu.tools.dynamic.DatabaseOperationsClass;
 import io.github.dgp_eu.tools.dynamic.HtmlClass;
-import io.github.dgp_eu.tools.dynamic.SpecificSqLiteClass;
+import io.github.dgp_eu.tools.dynamic.DatabaseSpecificSqLiteClass;
 import io.github.dgp_eu.tools.dynamic.UndertowClass;
 import io.undertow.server.HttpHandler;
 
@@ -80,9 +82,9 @@ public final class WebClass {
      */
     public static String getEnvironmentDetailsAsHtmlTable() {
         final Properties objFeatures = new Properties();
-        objFeatures.put(ConfigurationClass.STR_NEW_TAB, "Category");
+        objFeatures.put(ConfigurationClass.STR_NEW_TAB, ConfigurationClass.STR_CATEGORY);
         final List<Properties> envDetails = EnvironmentCapturingAssembleClass.packageCurrentEnvironmentDetailsIntoListOfProperties();
-        final List<String> desiredOrder = List.of("Category", "Element", "Value");
+        final List<String> desiredOrder = List.of(ConfigurationClass.STR_CATEGORY, "Element", "Value");
         final List<SequencedMap<Object, Object>> orderedList = envDetails.stream()
                 .map(prop -> BasicStructuresClass.ListAndMapSubClass.sortProperties(prop, desiredOrder))
                 .toList();
@@ -105,7 +107,7 @@ public final class WebClass {
             final List<Properties> crtFileStatistics = FileOperationsClass.StatisticsSubClass.getFileStatisticsIntoListOfProperties(crtFolderName, refTimeStamp);
             foldersStatistics.addAll(crtFileStatistics);
         }
-        final List<String> desiredOrder = List.of("Folder", "File", "Size [bytes]", "Size", "SHA-256", "Last Modified Timestamp", "Last Modified Aging");
+        final List<String> desiredOrder = List.of("Folder", "File", "Size [bytes]", ConfigurationClass.STR_SIZE, "SHA-256", "Last Modified Timestamp", "Last Modified Aging");
         final List<SequencedMap<Object, Object>> orderedList = foldersStatistics.stream()
                 .map(prop -> BasicStructuresClass.ListAndMapSubClass.sortProperties(prop, desiredOrder))
                 .toList();
@@ -142,7 +144,7 @@ public final class WebClass {
             case ConfigurationClass.STR_FILE_HASHING  -> getFileHashingAsHtmlTable();
             case ConfigurationClass.STR_SOFTWARE_RLS  -> getSoftwareReleasesIntoHtmlTable();
             case ConfigurationClass.STR_TS            -> HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(
-                    SpecificSqLiteClass.SqLiteStatisticsSubClass.getTableStatisticsIntoListForHtmlTable(),
+                    DatabaseSpecificSqLiteClass.SqLiteStatisticsSubClass.getTableStatisticsIntoListForHtmlTable(),
                     EMPTY_TABLE_PROPS);
             default                                     -> String.format("Welcome %s", System.getProperty("user.name"));
         });
@@ -157,7 +159,7 @@ public final class WebClass {
         return output -> output.writeContent( switch (page) {
             case ConfigurationClass.STR_ENV_DTLS     -> HtmlClass.FileInfoSubClass.gatherFileStatistics(Path.of(ProjectClass.getPomFile()));
             case ConfigurationClass.STR_SOFTWARE_RLS,
-                    ConfigurationClass.STR_TS        -> HtmlClass.FileInfoSubClass.gatherFileStatistics(Path.of(SpecificSqLiteClass.getInternalDatabase()));
+                    ConfigurationClass.STR_TS        -> HtmlClass.FileInfoSubClass.gatherFileStatistics(Path.of(DatabaseSpecificSqLiteClass.getInternalDatabase()));
             default                                    -> "<script>document.getElementById('infoContextId').style = 'display:none;';</script>";
         });
     }
@@ -168,6 +170,7 @@ public final class WebClass {
      */
     public static HttpHandler handleWebContent() {
         return exchange -> {
+            final LocalDateTime startWebTimeStamp = LocalDateTime.now(ZoneId.systemDefault());
             UndertowClass.handleCommonThings(exchange);
             final TemplateEngine templateEngine = UndertowClass.createTemplateEngine();
             final Utf8ByteOutput output = new Utf8ByteOutput();
@@ -175,6 +178,12 @@ public final class WebClass {
             UndertowClass.TemplateRenderingSubClass.setServerExchange(exchange);
             packAllParameters();
             UndertowClass.TemplateRenderingSubClass.renderTemplate(templateEngine, "index.jte");
+            final String page = UndertowClass.ParametersSubClass.getPageParameter();
+            final LocalDateTime stopWebTimeStamp = LocalDateTime.now(ZoneId.systemDefault());
+            final String strFeedbackEnd = TimingClass.logDuration(startWebTimeStamp,
+                    stopWebTimeStamp,
+                    String.format("Page %s processing got completed", page));
+            LogExposureClass.LOGGER.info(strFeedbackEnd);
         };
     }
 
@@ -286,7 +295,7 @@ public final class WebClass {
          */
         private static List<Properties> getSoftwareReleasesFromDatabase() {
             List<Properties> resultReleases = new ArrayList<>();
-            try (Connection objConnection = SpecificSqLiteClass.getSqLiteConnection();
+            try (Connection objConnection = DatabaseSpecificSqLiteClass.getSqLiteConnection();
                  Statement objStatement = DatabaseOperationsClass.ConnectivitySubClass.createSqlStatement(ConfigurationClass.STR_SQLITE, objConnection)) {
                 final String queryToUse = DatabaseOperationsClass.getPreDefinedQuery(ConfigurationClass.STR_SQLITE, "ReleasesListProductBranches");
                 final Properties rsProperties = DatabaseOperationsClass.packageResultSetProperties(STR_SOFT_RELEASES, queryToUse);

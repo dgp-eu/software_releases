@@ -57,7 +57,7 @@ public final class EnvironmentCapturingAssembleClass {
                 "Language", System.getProperty("user.language", strInsteadOfNull),
                 "Language.Format", System.getProperty("user.language.format", strInsteadOfNull),
                 "Home", System.getProperty("user.home", strInsteadOfNull).replace("\\", "\\\\"),
-                "Name", System.getProperty("user.name", strInsteadOfNull),
+                ConfigurationClass.STR_NAME, System.getProperty("user.name", strInsteadOfNull),
                 "Timezone", System.getProperty("user.timezone", strInsteadOfNull),
                 "Username", username,
                 "User Account", userAccount);
@@ -167,7 +167,7 @@ public final class EnvironmentCapturingAssembleClass {
         if (strEnvironment != null) {
             strJsonString.append(",\"Environment\":").append(strEnvironment);
         }
-        return BasicStructuresClass.StringCleaningSubClass.ensureEscapingForValidJson(strJsonString.append('}').toString());
+        return BasicStructuresClass.StringCleaningSubClass.ensureEscapingOnEndOfLineAndTabs(strJsonString.append('}').toString());
     }
 
     /**
@@ -343,7 +343,7 @@ public final class EnvironmentCapturingAssembleClass {
                             strIdentifier + "IPv6", String.join(", ", addressIPV6),
                             strIdentifier + "MTU", net.getMTU(),
                             strIdentifier + "NDIS Physical Medium Type", OshiUsageClass.getNetworkPhysicalMediumType(net.getNdisPhysicalMediumType()),
-                            strIdentifier + ConfigurationClass.STR_STATUS, status,
+                            strIdentifier + "Status", status,
                             strIdentifier + "Speed", FormatUtil.formatBytes(net.getSpeed())));
                 }
             }
@@ -428,14 +428,14 @@ public final class EnvironmentCapturingAssembleClass {
                 final Firmware firmware = OshiUsageClass.HardwareSubClass.getOshiFirmware();
                 return Map.of(
                         ConfigurationClass.STR_FIRMWARE + " " + ConfigurationClass.STR_MANUFACTURER, firmware.getManufacturer(),
-                        ConfigurationClass.STR_FIRMWARE + " " + "Name", firmware.getName(),
-                        ConfigurationClass.STR_FIRMWARE + " " + "Description", firmware.getDescription(),
+                        ConfigurationClass.STR_FIRMWARE + " " + ConfigurationClass.STR_NAME, firmware.getName(),
+                        ConfigurationClass.STR_FIRMWARE + " " + ConfigurationClass.STR_DESCRIPTION, firmware.getDescription(),
                         ConfigurationClass.STR_FIRMWARE + " " + ConfigurationClass.STR_VERSION, firmware.getVersion(),
                         ConfigurationClass.STR_FIRMWARE + " " + "Release Date", firmware.getReleaseDate() == null ? "unknown" : firmware.getReleaseDate());
             }
 
             /**
-             * Mainboard details gathered
+             * Main-board details gathered
              * @return Map
              */
             public static Map<String, Object> getDetailsAboutMainboard() {

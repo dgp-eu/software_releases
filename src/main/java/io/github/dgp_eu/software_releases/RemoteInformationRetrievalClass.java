@@ -219,7 +219,7 @@ public final class RemoteInformationRetrievalClass {
                 final long fileSize = responseHeader.headers()
                         .firstValueAsLong("Content-Length")
                         .orElse(-1L);
-                outProperties.put("Size", fileSize);
+                outProperties.put(ConfigurationClass.STR_SIZE, fileSize);
             } else {
                 logImproperStatusCode(responseCode);
             }

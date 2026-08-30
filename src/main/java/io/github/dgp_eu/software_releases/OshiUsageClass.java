@@ -73,8 +73,8 @@ public final class OshiUsageClass {
         for(final OSFileStore fileStore : osFileStores) {
             final String strIdentifier = "Partition UUID#" + fileStore.getUUID() + " ";
             arrayAttributes.putAll(Map.of(
-                    strIdentifier + "Description", fileStore.getDescription(),
-                    strIdentifier + "Label", fileStore.getLabel(),
+                    strIdentifier + ConfigurationClass.STR_DESCRIPTION, fileStore.getDescription(),
+                    strIdentifier + ConfigurationClass.STR_LABEL, fileStore.getLabel(),
                     strIdentifier + "Logical Volume", fileStore.getLogicalVolume(),
                     strIdentifier + "Mount", fileStore.getMount().replace("\\", "\\\\"),
                     strIdentifier + ConfigurationClass.STR_NAME, fileStore.getName(),

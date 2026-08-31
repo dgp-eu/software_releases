@@ -33,6 +33,8 @@ import oshi.util.PlatformEnum;
  * Capturing current environment details
  */
 public final class EnvironmentCapturingAssembleClass {
+    /** Constant to expose instead of NULL values */
+    private static final String STR_INSTEAD_NULL = "---";
 
     /**
      * Constructor
@@ -46,19 +48,18 @@ public final class EnvironmentCapturingAssembleClass {
      * @return Map
      */
     private static Map<String, Object> gatherEnvironmentDetails() {
-        final String strInsteadOfNull = "---";
-        final String strComputer = getComputerName(strInsteadOfNull);
-        final String username = getUserName(strInsteadOfNull);
+        final String strComputer = getComputerName(STR_INSTEAD_NULL);
+        final String username = getUserName(STR_INSTEAD_NULL);
         final String userAccount = ShellingClass.getCurrentUserAccount();
         return Map.of(
                 "Computer", strComputer,
-                "Country", System.getProperty("user.country", strInsteadOfNull),
-                "Country.Format", System.getProperty("user.country.format", strInsteadOfNull),
-                "Language", System.getProperty("user.language", strInsteadOfNull),
-                "Language.Format", System.getProperty("user.language.format", strInsteadOfNull),
-                "Home", System.getProperty("user.home", strInsteadOfNull).replace("\\", "\\\\"),
-                ConfigurationClass.STR_NAME, System.getProperty("user.name", strInsteadOfNull),
-                "Timezone", System.getProperty("user.timezone", strInsteadOfNull),
+                "Country", System.getProperty("user.country", STR_INSTEAD_NULL),
+                "Country.Format", System.getProperty("user.country.format", STR_INSTEAD_NULL),
+                "Language", System.getProperty("user.language", STR_INSTEAD_NULL),
+                "Language.Format", System.getProperty("user.language.format", STR_INSTEAD_NULL),
+                "Home", System.getProperty("user.home", STR_INSTEAD_NULL).replace("\\", "\\\\"),
+                ConfigurationClass.STR_NAME, System.getProperty("user.name", STR_INSTEAD_NULL),
+                "Timezone", System.getProperty("user.timezone", STR_INSTEAD_NULL),
                 "Username", username,
                 "User Account", userAccount);
     }
@@ -83,16 +84,16 @@ public final class EnvironmentCapturingAssembleClass {
      */
     private static Map<String, Object> gatherJavaDetails() {
         return Map.of(
-                "Release", System.getProperty("java.vendor.version"),
-                "Runtime Name", System.getProperty("java.runtime.name"),
-                "Runtime Version", System.getProperty("java.runtime.version"),
-                ConfigurationClass.STR_VENDOR, System.getProperty("java.vendor"),
-                ConfigurationClass.STR_VERSION, System.getProperty("java.version"),
-                "Version Date", System.getProperty("java.version.date"),
-                "VM Name", System.getProperty("java.vm.name"),
-                "VM Version", System.getProperty("java.vm.version"),
-                "VM Specification Name", System.getProperty("java.vm.specification.name"),
-                "VM Specification Vendor", System.getProperty("java.vm.specification.vendor"));
+                "Runtime Name", System.getProperty("java.runtime.name", STR_INSTEAD_NULL),
+                "Runtime Version", System.getProperty("java.runtime.version", STR_INSTEAD_NULL),
+                ConfigurationClass.STR_VENDOR, System.getProperty("java.vendor", STR_INSTEAD_NULL),
+                "Vendor Version", System.getProperty("java.vendor.version", STR_INSTEAD_NULL),
+                ConfigurationClass.STR_VERSION, System.getProperty("java.version", STR_INSTEAD_NULL),
+                "Version Date", System.getProperty("java.version.date", STR_INSTEAD_NULL),
+                "VM Name", System.getProperty("java.vm.name", STR_INSTEAD_NULL),
+                "VM Version", System.getProperty("java.vm.version", STR_INSTEAD_NULL),
+                "VM Specification Name", System.getProperty("java.vm.specification.name", STR_INSTEAD_NULL),
+                "VM Specification Vendor", System.getProperty("java.vm.specification.vendor", STR_INSTEAD_NULL));
     }
 
     /**
@@ -357,12 +358,12 @@ public final class EnvironmentCapturingAssembleClass {
         public static Map<String, Object> getDetailsAboutOperatingSystem() {
             final OperatingSystem.OSVersionInfo version = OshiUsageClass.SoftwareSubClass.getOshiVersionInfo();
             return Map.of(
-                    "Architecture", System.getProperty("os.arch"),
+                    "Architecture", System.getProperty("os.arch", STR_INSTEAD_NULL),
                     "Build", version.getBuildNumber(),
                     "Code", version.getCodeName(),
                     "Family", OshiUsageClass.SoftwareSubClass.getOshiFamily(),
                     ConfigurationClass.STR_MANUFACTURER, OshiUsageClass.SoftwareSubClass.getOshiManufacturer(),
-                    ConfigurationClass.STR_NAME, System.getProperty("os.name"),
+                    ConfigurationClass.STR_NAME, System.getProperty("os.name", STR_INSTEAD_NULL),
                     "Platform", PlatformEnum.getCurrentPlatform().toString(),
                     ConfigurationClass.STR_VERSION, version.getVersion());
         }

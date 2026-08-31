@@ -146,7 +146,7 @@ public final class WebClass {
             case ConfigurationClass.STR_TS            -> HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(
                     DatabaseSpecificSqLiteClass.SqLiteStatisticsSubClass.getTableStatisticsIntoListForHtmlTable(),
                     EMPTY_TABLE_PROPS);
-            default                                     -> String.format("Welcome %s", System.getProperty("user.name"));
+            default                                     -> String.format("Welcome %s", System.getProperty("user.name", "UNKNOWN user.name"));
         });
     }
 

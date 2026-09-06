@@ -15,10 +15,10 @@ import io.github.dgp_eu.tools.core.FileOperationsClass;
 import io.github.dgp_eu.tools.core.LogExposureClass;
 import io.github.dgp_eu.tools.core.RegularExpressionsClass;
 import io.github.dgp_eu.tools.dynamic.JsonOperationsClass;
-import io.github.dgp_eu.tools.dynamic.DatabaseSpecificMySqlClass;
-import io.github.dgp_eu.tools.dynamic.DatabaseSpecificSnowflakeClass;
-import io.github.dgp_eu.tools.dynamic.DatabaseSpecificSqLiteClass;
-import io.github.dgp_eu.tools.dynamic.UndertowClass;
+import io.github.dgp_eu.tools.dynamic.database.DatabaseSpecificMySqlClass;
+import io.github.dgp_eu.tools.dynamic.database.DatabaseSpecificSnowflakeClass;
+import io.github.dgp_eu.tools.dynamic.database.DatabaseSpecificSqLiteClass;
+import io.github.dgp_eu.tools.dynamic.web.UndertowClass;
 import picocli.CommandLine;
 import picocli.CommandLine.Mixin;
 import tools.jackson.databind.JsonNode;
@@ -279,11 +279,22 @@ class WebUserInterface implements Runnable {
     @Mixin
     private final CommonInteractiveClass.FolderNameOptionMixinClass optFolderNames = new CommonInteractiveClass.FolderNameOptionMixinClass();
 
+    /**
+     * String for out FileName
+     */
+    @CommandLine.Option(
+            names = {"-jl", "--jsonLocations"},
+            description = "JSON file name with array of Locations",
+            arity = CommonInteractiveClass.ARITY_ONLY_ONE,
+            required = true)
+    private String strJsonLocations;
+
     @Override
     public void run() {
         UndertowClass.setWebPort(String.valueOf(optPortNumber.getPortNumber()));
         DatabaseSpecificSqLiteClass.setInternalDatabase(optLocalDbFile.getLocalDbFile());
         WebClass.setFolderNamesForChecksumExposure(optFolderNames.getFolderNames());
+        WebClass.setJsonLocationsFile(strJsonLocations);
         UndertowClass.setRootHandler(WebClass.handleWebContent());
         UndertowClass.runWebServer();
     }

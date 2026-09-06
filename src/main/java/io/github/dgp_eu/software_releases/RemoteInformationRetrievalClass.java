@@ -31,7 +31,7 @@ import org.xml.sax.SAXException;
 import io.github.dgp_eu.tools.core.ConfigurationClass;
 import io.github.dgp_eu.tools.core.LogExposureClass;
 import io.github.dgp_eu.tools.core.RegularExpressionsClass;
-import io.github.dgp_eu.tools.core.TimingClass;
+import io.github.dgp_eu.tools.core.time.TimingClass;
 
 /**
  * XML management

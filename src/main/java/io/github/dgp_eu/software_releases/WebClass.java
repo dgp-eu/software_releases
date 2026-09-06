@@ -5,16 +5,16 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.SequencedMap;
+import java.util.stream.Collectors;
 
 import org.jspecify.annotations.NonNull;
 
@@ -25,12 +25,14 @@ import io.github.dgp_eu.tools.core.ConfigurationClass;
 import io.github.dgp_eu.tools.core.FileOperationsClass;
 import io.github.dgp_eu.tools.core.LogExposureClass;
 import io.github.dgp_eu.tools.core.ProjectClass;
-import io.github.dgp_eu.tools.core.TimingClass;
-import io.github.dgp_eu.tools.dynamic.DatabaseOperationsClass;
-import io.github.dgp_eu.tools.dynamic.HtmlClass;
-import io.github.dgp_eu.tools.dynamic.DatabaseSpecificSqLiteClass;
-import io.github.dgp_eu.tools.dynamic.UndertowClass;
+import io.github.dgp_eu.tools.core.time.TimingClass;
+import io.github.dgp_eu.tools.dynamic.JsonOperationsClass;
+import io.github.dgp_eu.tools.dynamic.database.DatabaseOperationsClass;
+import io.github.dgp_eu.tools.dynamic.database.DatabaseSpecificSqLiteClass;
+import io.github.dgp_eu.tools.dynamic.web.HtmlClass;
+import io.github.dgp_eu.tools.dynamic.web.UndertowClass;
 import io.undertow.server.HttpHandler;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Web interface class
@@ -44,6 +46,8 @@ public final class WebClass {
     private static final Properties EMPTY_TABLE_PROPS = new Properties();
     /** Variable for Folders relevant for Checksum Exposure */
     private static String[] strFolderNames = new String[0];
+    /** Variable for JSON file with Locations */
+    private static String jsonLocations;
 
     static {
         buildMenu();
@@ -74,13 +78,17 @@ public final class WebClass {
                 ConfigurationClass.STR_ICON, "fa-solid fa-computer",
                 ConfigurationClass.STR_MENU, "Environment Details",
                 ConfigurationClass.STR_TITLE, "Environment Details"));
+        MAP_MENU.put("locationSun", Map.of(
+                ConfigurationClass.STR_ICON, "fa-solid fa-business-time",
+                ConfigurationClass.STR_MENU, "Location Time",
+                ConfigurationClass.STR_TITLE, "Location Time"));
     }
 
     /**
      * Outputs file statistics into an HTML table
      * @return String
      */
-    public static String getEnvironmentDetailsAsHtmlTable() {
+    private static String getEnvironmentDetailsAsHtmlTable() {
         final Properties objFeatures = new Properties();
         objFeatures.put(ConfigurationClass.STR_NEW_TAB, ConfigurationClass.STR_CATEGORY);
         final List<Properties> envDetails = EnvironmentCapturingAssembleClass.packageCurrentEnvironmentDetailsIntoListOfProperties();
@@ -103,7 +111,7 @@ public final class WebClass {
         for(final String crtFolderName: folderNames) {
             final String strFeedback = String.format("Will process folder %s", crtFolderName);
             LogExposureClass.LOGGER.info(strFeedback);
-            final ZonedDateTime refTimeStamp = ZonedDateTime.now(ZoneId.systemDefault());
+            final ZonedDateTime refTimeStamp = TimingClass.getCurrentZonedDateTime();
             final List<Properties> crtFileStatistics = FileOperationsClass.StatisticsSubClass.getFileStatisticsIntoListOfProperties(crtFolderName, refTimeStamp);
             foldersStatistics.addAll(crtFileStatistics);
         }
@@ -111,7 +119,52 @@ public final class WebClass {
         final List<SequencedMap<Object, Object>> orderedList = foldersStatistics.stream()
                 .map(prop -> BasicStructuresClass.ListAndMapSubClass.sortProperties(prop, desiredOrder))
                 .toList();
-        return HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(orderedList, EMPTY_TABLE_PROPS);  
+        return HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(orderedList, EMPTY_TABLE_PROPS);
+    }
+
+    /**
+     * Sun details for all Locations with JSON
+     * @return String with UI of Locations as tabs
+     */
+    private static String getLocationSunDetailsAsHtmlTable() {
+        final JsonNode jsonArray = JsonOperationsClass.getJsonFileNodes(Path.of(jsonLocations));
+        StringBuilder sbReturn = new StringBuilder(100);
+        sbReturn.append("<div id=\"tabStandard\" class=\"tabber\">");
+        jsonArray.forEach(crtLocation -> {
+            SunClass.setZoneId(crtLocation.get("TimeZoneName").toString().replace("\"", ""));
+            SunClass.setLatitude(Double.parseDouble(crtLocation.get("Latitude").toString()));
+            SunClass.setLongitude(Double.parseDouble(crtLocation.get("Longitude").toString()));
+            final String strTabTitle = crtLocation.get("LocationPlaceDivisionCountry").toString().replace("\"", "");
+            final Map<String, Object> mapSunRiseAndSet = SunClass.getSunRiseAndSet(strTabTitle);
+            final String strFeedback = String.format("LocationPlaceDivisionCountry is %s and has details as %s",
+                    strTabTitle,
+                    mapSunRiseAndSet.toString());
+            LogExposureClass.LOGGER.debug(strFeedback);
+            final Map<String, Object> sortedSun = mapSunRiseAndSet.entrySet().stream()
+                    .sorted(Comparator.comparing(Map.Entry::getKey))
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            Map.Entry::getValue,
+                            (e1, _) -> e1, // merge function (not used here)
+                            LinkedHashMap::new // preserve sorted order
+                    ));
+            sbReturn.append("<div class=\"tabbertab\" title=\"")
+                    .append(strTabTitle)
+                    .append("\">")
+                    .append("<table style=\"float:left;\">");
+            sortedSun.forEach((crtKey, crtValue) -> {
+                if (!crtValue.equals(strTabTitle)) {
+                    sbReturn.append("<tr>")
+                           .append("<th>").append(crtKey).append("</th>")
+                           .append("<td>").append(crtValue).append("</td>")
+                           .append("</tr>");
+                }
+            });
+            sbReturn.append("</table>")
+                    .append("</div><!-- %s -->");
+        });
+        sbReturn.append("</div><!-- tabStandard -->");
+        return sbReturn.toString();
     }
 
     /**
@@ -143,10 +196,12 @@ public final class WebClass {
             case ConfigurationClass.STR_ENV_DTLS      -> getEnvironmentDetailsAsHtmlTable();
             case ConfigurationClass.STR_FILE_HASHING  -> getFileHashingAsHtmlTable();
             case ConfigurationClass.STR_SOFTWARE_RLS  -> getSoftwareReleasesIntoHtmlTable();
+            case "locationSun"                        -> getLocationSunDetailsAsHtmlTable();
             case ConfigurationClass.STR_TS            -> HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(
                     DatabaseSpecificSqLiteClass.SqLiteStatisticsSubClass.getTableStatisticsIntoListForHtmlTable(),
                     EMPTY_TABLE_PROPS);
-            default                                     -> String.format("Welcome %s", System.getProperty("user.name", "UNKNOWN user.name"));
+            default                                   -> String.format("Welcome %s",
+                    System.getProperty("user.name", "UNKNOWN user.name"));
         });
     }
 
@@ -170,7 +225,7 @@ public final class WebClass {
      */
     public static HttpHandler handleWebContent() {
         return exchange -> {
-            final LocalDateTime startWebTimeStamp = LocalDateTime.now(ZoneId.systemDefault());
+            final ZonedDateTime startWebTimeStamp = TimingClass.getCurrentZonedDateTime();
             UndertowClass.handleCommonThings(exchange);
             final TemplateEngine templateEngine = UndertowClass.createTemplateEngine();
             final Utf8ByteOutput output = new Utf8ByteOutput();
@@ -179,7 +234,7 @@ public final class WebClass {
             packAllParameters();
             UndertowClass.TemplateRenderingSubClass.renderTemplate(templateEngine, "index.jte");
             final String page = UndertowClass.ParametersSubClass.getPageParameter();
-            final LocalDateTime stopWebTimeStamp = LocalDateTime.now(ZoneId.systemDefault());
+            final ZonedDateTime stopWebTimeStamp = TimingClass.getCurrentZonedDateTime();
             final String strFeedbackEnd = TimingClass.logDuration(startWebTimeStamp,
                     stopWebTimeStamp,
                     String.format("Page %s processing got completed", page));
@@ -212,6 +267,14 @@ public final class WebClass {
      */
     public static void setFolderNamesForChecksumExposure(@NonNull final String... inFolderNames) {
         strFolderNames = Arrays.copyOf(inFolderNames, inFolderNames.length);
+    }
+
+    /**
+     * Setter for jsonLocations
+     * @param inJsonLocations JSON file with Locations as array
+     */
+    public static void setJsonLocationsFile(@NonNull final String inJsonLocations) {
+        jsonLocations = inJsonLocations;
     }
 
     /**

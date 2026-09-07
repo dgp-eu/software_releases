@@ -155,12 +155,13 @@ public final class WebClass {
             sortedSun.forEach((crtKey, crtValue) -> {
                 if (!crtValue.equals(strTabTitle)) {
                     sbReturn.append("<tr>")
-                           .append("<th>").append(crtKey).append("</th>")
+                           .append("<th style=\"text-align:left;\">").append(crtKey).append("</th>")
                            .append("<td>").append(crtValue).append("</td>")
                            .append("</tr>");
                 }
             });
             sbReturn.append("</table>")
+                    .append("<div style=\"float:none;clear:both;height:5px;\">&nbsp;</div>")
                     .append("</div><!-- %s -->");
         });
         sbReturn.append("</div><!-- tabStandard -->");
@@ -215,7 +216,7 @@ public final class WebClass {
             case ConfigurationClass.STR_ENV_DTLS     -> HtmlClass.FileInfoSubClass.gatherFileStatistics(Path.of(ProjectClass.getPomFile()));
             case ConfigurationClass.STR_SOFTWARE_RLS,
                     ConfigurationClass.STR_TS        -> HtmlClass.FileInfoSubClass.gatherFileStatistics(Path.of(DatabaseSpecificSqLiteClass.getInternalDatabase()));
-            default                                    -> "<script>document.getElementById('infoContextId').style = 'display:none;';</script>";
+            default                                  -> "<script>document.getElementById('infoContextId').style = 'display:none;';</script>";
         });
     }
 
@@ -231,9 +232,9 @@ public final class WebClass {
             final Utf8ByteOutput output = new Utf8ByteOutput();
             UndertowClass.TemplateRenderingSubClass.setOutput(output);
             UndertowClass.TemplateRenderingSubClass.setServerExchange(exchange);
-            packAllParameters();
-            UndertowClass.TemplateRenderingSubClass.renderTemplate(templateEngine, "index.jte");
             final String page = UndertowClass.ParametersSubClass.getPageParameter();
+            packAllParameters(page);
+            UndertowClass.TemplateRenderingSubClass.renderTemplate(templateEngine, "index.jte");
             final ZonedDateTime stopWebTimeStamp = TimingClass.getCurrentZonedDateTime();
             final String strFeedbackEnd = TimingClass.logDuration(startWebTimeStamp,
                     stopWebTimeStamp,
@@ -245,8 +246,7 @@ public final class WebClass {
     /**
      * Packing all parameters to Template
      */
-    private static void packAllParameters() {
-        final String page = UndertowClass.ParametersSubClass.getPageParameter();
+    private static void packAllParameters(final String page) {
         UndertowClass.TemplateRenderingSubClass.packParameter("page", page);
         String title = page;
         if (!ConfigurationClass.STR_LOCALIZATION.equalsIgnoreCase(page)) {

@@ -32,6 +32,8 @@ import io.github.dgp_eu.tools.dynamic.database.DatabaseSpecificSqLiteClass;
 import io.github.dgp_eu.tools.dynamic.web.HtmlClass;
 import io.github.dgp_eu.tools.dynamic.web.UndertowClass;
 import io.undertow.server.HttpHandler;
+import io.undertow.util.HeaderMap;
+import io.undertow.util.Headers;
 import tools.jackson.databind.JsonNode;
 
 /**
@@ -233,8 +235,21 @@ public final class WebClass {
             UndertowClass.TemplateRenderingSubClass.setOutput(output);
             UndertowClass.TemplateRenderingSubClass.setServerExchange(exchange);
             final String page = UndertowClass.ParametersSubClass.getPageParameter();
-            packAllParameters(page);
-            UndertowClass.TemplateRenderingSubClass.renderTemplate(templateEngine, "index.jte");
+            if ("downloadJSON".equalsIgnoreCase(page)) {
+                final String jsonEnvironment = EnvironmentCapturingAssembleClass.packageCurrentEnvironmentDetailsIntoJson();
+                final HeaderMap header = exchange.getResponseHeaders();
+                header.put(Headers.CONTENT_TYPE, "application/json");
+                header.put(Headers.CONTENT_LENGTH, jsonEnvironment.length());
+                final String strComputerName = EnvironmentCapturingAssembleClass.getComputerName("UNNAMED_COMPUTER");
+                header.put(Headers.CONTENT_DISPOSITION, String.format("attachment; filename=\"environment__%s__%s.json\";",
+                        strComputerName,
+                        TimingClass.getCurrentDateTimeUniveralTimeCoordination().replaceAll("[-:\\s\\.]", "_")));
+                exchange.setStatusCode(200);
+                exchange.getResponseSender().send(jsonEnvironment);
+            } else {
+                packAllParameters(page);
+                UndertowClass.TemplateRenderingSubClass.renderTemplate(templateEngine, "index.jte");
+            }
             final ZonedDateTime stopWebTimeStamp = TimingClass.getCurrentZonedDateTime();
             final String strFeedbackEnd = TimingClass.logDuration(startWebTimeStamp,
                     stopWebTimeStamp,

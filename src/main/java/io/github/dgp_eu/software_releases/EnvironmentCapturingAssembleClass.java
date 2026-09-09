@@ -113,7 +113,7 @@ public final class EnvironmentCapturingAssembleClass {
      * @param strInsteadOfNull alternative text if not found
      * @return String with computer name
      */
-    private static String getComputerName(final String strInsteadOfNull) {
+    public static String getComputerName(final String strInsteadOfNull) {
         String strComputer = System.getenv("COMPUTERNAME");
         if (strComputer == null) {
             strComputer = System.getenv("HOSTNAME");

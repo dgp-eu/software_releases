@@ -32,8 +32,8 @@ import io.github.dgp_eu.tools.dynamic.database.DatabaseSpecificSqLiteClass;
 import io.github.dgp_eu.tools.dynamic.web.HtmlClass;
 import io.github.dgp_eu.tools.dynamic.web.UndertowClass;
 import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HeaderMap;
-import io.undertow.util.Headers;
 import tools.jackson.databind.JsonNode;
 
 /**
@@ -98,7 +98,8 @@ public final class WebClass {
         final List<SequencedMap<Object, Object>> orderedList = envDetails.stream()
                 .map(prop -> BasicStructuresClass.ListAndMapSubClass.sortProperties(prop, desiredOrder))
                 .toList();
-        return HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(orderedList, objFeatures);
+        return "<div><a href=\"?page=downloadEnvironmentDetailsAsJSONfile\">Dowload to a JSON file</a></div>"
+                + HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(orderedList, objFeatures);
     }
 
     /**
@@ -209,6 +210,21 @@ public final class WebClass {
     }
 
     /**
+     * Handle HTML content
+     * @param inExchange input Exchange
+     * @param page id for the content
+     */
+    private static void handleHtmlContent(final HttpServerExchange inExchange, final String page) {
+        UndertowClass.TemplateRenderingSubClass.setContentDispositionAndTypeValuesForHtmlContent();
+        UndertowClass.handleCommonThings(inExchange);
+        final TemplateEngine templateEngine = UndertowClass.createTemplateEngine();
+        final Utf8ByteOutput output = new Utf8ByteOutput();
+        UndertowClass.TemplateRenderingSubClass.setOutput(output);
+        packAllParameters(page);
+        UndertowClass.TemplateRenderingSubClass.renderTemplate(templateEngine, "index.jte");
+    }
+
+    /**
      * Info context handler
      * @param page page identifier
      * @return info Context
@@ -223,32 +239,38 @@ public final class WebClass {
     }
 
     /**
+     * Handle JSON content with Environment details
+     * @param inExchange input Exchange
+     */
+    private static void handleJsonContent(final HttpServerExchange inExchange) {
+        final String jsonEnvironment = EnvironmentCapturingAssembleClass.packageCurrentEnvironmentDetailsIntoJson();
+        final Utf8ByteOutput outputJson = new Utf8ByteOutput();
+        outputJson.writeContent(jsonEnvironment);
+        UndertowClass.TemplateRenderingSubClass.setOutput(outputJson);
+        UndertowClass.TemplateRenderingSubClass.setContentTypeValue("application/json");
+        final String strContentDisp = String.format("attachment; filename=\"environment__%s__%s.json\";",
+                EnvironmentCapturingAssembleClass.getComputerName("UNNAMED_COMPUTER"),
+                TimingClass.getCurrentDateTimeUniveralTimeCoordination().replaceAll("[-:\\s\\.]", "_"));
+        UndertowClass.TemplateRenderingSubClass.setContentDisposition(strContentDisp);
+        final HeaderMap header = inExchange.getResponseHeaders();
+        UndertowClass.TemplateRenderingSubClass.handleResponseHeader(header);
+        inExchange.getResponseSender().send(jsonEnvironment);
+    }
+
+    /**
      * Handle web content
      * @return PathHandler web content
      */
     public static HttpHandler handleWebContent() {
         return exchange -> {
             final ZonedDateTime startWebTimeStamp = TimingClass.getCurrentZonedDateTime();
-            UndertowClass.handleCommonThings(exchange);
-            final TemplateEngine templateEngine = UndertowClass.createTemplateEngine();
-            final Utf8ByteOutput output = new Utf8ByteOutput();
-            UndertowClass.TemplateRenderingSubClass.setOutput(output);
+            UndertowClass.handleQueryParametersAndPage(exchange);
             UndertowClass.TemplateRenderingSubClass.setServerExchange(exchange);
             final String page = UndertowClass.ParametersSubClass.getPageParameter();
-            if ("downloadJSON".equalsIgnoreCase(page)) {
-                final String jsonEnvironment = EnvironmentCapturingAssembleClass.packageCurrentEnvironmentDetailsIntoJson();
-                final HeaderMap header = exchange.getResponseHeaders();
-                header.put(Headers.CONTENT_TYPE, "application/json");
-                header.put(Headers.CONTENT_LENGTH, jsonEnvironment.length());
-                final String strComputerName = EnvironmentCapturingAssembleClass.getComputerName("UNNAMED_COMPUTER");
-                header.put(Headers.CONTENT_DISPOSITION, String.format("attachment; filename=\"environment__%s__%s.json\";",
-                        strComputerName,
-                        TimingClass.getCurrentDateTimeUniveralTimeCoordination().replaceAll("[-:\\s\\.]", "_")));
-                exchange.setStatusCode(200);
-                exchange.getResponseSender().send(jsonEnvironment);
+            if ("downloadEnvironmentDetailsAsJSONfile".equalsIgnoreCase(page)) {
+                handleJsonContent(exchange);
             } else {
-                packAllParameters(page);
-                UndertowClass.TemplateRenderingSubClass.renderTemplate(templateEngine, "index.jte");
+                handleHtmlContent(exchange, page);
             }
             final ZonedDateTime stopWebTimeStamp = TimingClass.getCurrentZonedDateTime();
             final String strFeedbackEnd = TimingClass.logDuration(startWebTimeStamp,

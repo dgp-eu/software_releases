@@ -25,7 +25,7 @@ import io.github.dgp_eu.tools.core.time.TimingClass;
 public final class SunClass {
     /** Constant for Next Event */
     private static final String NEXT_EVENT = "Next event";
-    /** Constant for Prior Event */
+    /** Constant for a Prior Event */
     private static final String PRIOR_EVENT = "Prior event";
     /** Zenith for official sunrise/sunset (90° 50') */
     private static final double ZENITH = 90.833;
@@ -102,7 +102,7 @@ public final class SunClass {
         // 6. Local hour angle
         final double cosH = (cos(toRadians(ZENITH))
                 - (sinDec * sin(toRadians(dblLatitude)))) / (cosDec * cos(toRadians(dblLatitude)));
-        ZonedDateTime outZonedDateTime = null;
+        ZonedDateTime outZonedDateTime = inNowZ;
         if (cosH >= -1
                 && cosH <= 1) { // only if Sun rises/sets
             // 7. Local mean time

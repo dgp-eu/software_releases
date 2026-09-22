@@ -29,8 +29,10 @@ import io.github.dgp_eu.tools.core.time.TimingClass;
 import io.github.dgp_eu.tools.dynamic.JsonOperationsClass;
 import io.github.dgp_eu.tools.dynamic.database.DatabaseOperationsClass;
 import io.github.dgp_eu.tools.dynamic.database.DatabaseSpecificSqLiteClass;
+import io.github.dgp_eu.tools.dynamic.web.JavaTemplateRenderingClass;
 import io.github.dgp_eu.tools.dynamic.web.HtmlClass;
 import io.github.dgp_eu.tools.dynamic.web.UndertowClass;
+import io.github.dgp_eu.tools.dynamic.web.UndertowParametersClass;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HeaderMap;
@@ -215,13 +217,13 @@ public final class WebClass {
      * @param page id for the content
      */
     private static void handleHtmlContent(final HttpServerExchange inExchange, final String page) {
-        UndertowClass.TemplateRenderingSubClass.setContentDispositionAndTypeValuesForHtmlContent();
+        JavaTemplateRenderingClass.setContentDispositionAndTypeValuesForHtmlContent();
         UndertowClass.handleCommonThings(inExchange);
         final TemplateEngine templateEngine = UndertowClass.createTemplateEngine();
         final Utf8ByteOutput output = new Utf8ByteOutput();
-        UndertowClass.TemplateRenderingSubClass.setOutput(output);
+        JavaTemplateRenderingClass.setOutput(output);
         packAllParameters(page);
-        UndertowClass.TemplateRenderingSubClass.renderTemplate(templateEngine, "index.jte");
+        JavaTemplateRenderingClass.renderTemplate(templateEngine, "index.jte");
     }
 
     /**
@@ -246,14 +248,14 @@ public final class WebClass {
         final String jsonEnvironment = EnvironmentCapturingAssembleClass.packageCurrentEnvironmentDetailsIntoJson();
         final Utf8ByteOutput outputJson = new Utf8ByteOutput();
         outputJson.writeContent(jsonEnvironment);
-        UndertowClass.TemplateRenderingSubClass.setOutput(outputJson);
-        UndertowClass.TemplateRenderingSubClass.setContentTypeValue("application/json");
+        JavaTemplateRenderingClass.setOutput(outputJson);
+        JavaTemplateRenderingClass.setContentTypeValue("application/json");
         final String strContentDisp = String.format("attachment; filename=\"environment__%s__%s.json\";",
                 EnvironmentCapturingAssembleClass.getComputerName("UNNAMED_COMPUTER"),
                 TimingClass.getCurrentDateTimeUniveralTimeCoordination().replaceAll("[-:\\s\\.]", "_"));
-        UndertowClass.TemplateRenderingSubClass.setContentDisposition(strContentDisp);
+        JavaTemplateRenderingClass.setContentDisposition(strContentDisp);
         final HeaderMap header = inExchange.getResponseHeaders();
-        UndertowClass.TemplateRenderingSubClass.handleResponseHeader(header);
+        JavaTemplateRenderingClass.handleResponseHeader(header);
         inExchange.getResponseSender().send(jsonEnvironment);
     }
 
@@ -265,8 +267,8 @@ public final class WebClass {
         return exchange -> {
             final ZonedDateTime startWebTimeStamp = TimingClass.getCurrentZonedDateTime();
             UndertowClass.handleQueryParametersAndPage(exchange);
-            UndertowClass.TemplateRenderingSubClass.setServerExchange(exchange);
-            final String page = UndertowClass.ParametersSubClass.getPageParameter();
+            JavaTemplateRenderingClass.setServerExchange(exchange);
+            final String page = UndertowParametersClass.getPageParameter();
             if ("downloadEnvironmentDetailsAsJSONfile".equalsIgnoreCase(page)) {
                 handleJsonContent(exchange);
             } else {
@@ -284,18 +286,18 @@ public final class WebClass {
      * Packing all parameters to Template
      */
     private static void packAllParameters(final String page) {
-        UndertowClass.TemplateRenderingSubClass.packParameter("page", page);
+        JavaTemplateRenderingClass.packParameter("page", page);
         String title = page;
         if (!ConfigurationClass.STR_LOCALIZATION.equalsIgnoreCase(page)) {
             final Map<String, String> menuEntry = MAP_MENU.get(page);
             title = menuEntry != null ? menuEntry.getOrDefault(ConfigurationClass.STR_TITLE, page) : page;
         }
-        UndertowClass.TemplateRenderingSubClass.packParameter("title", title);
+        JavaTemplateRenderingClass.packParameter("title", title);
         final gg.jte.Content myMenu = output -> output.writeContent(HtmlClass.buildMenuString(MAP_MENU));
-        UndertowClass.TemplateRenderingSubClass.packParameter("menu", myMenu);
-        UndertowClass.TemplateRenderingSubClass.packParameter("infoContext", handleInfoContext(page));
-        UndertowClass.TemplateRenderingSubClass.packParameter("mainContent", handleBodyContent(page));
-        UndertowClass.TemplateRenderingSubClass.packCommonParameters();
+        JavaTemplateRenderingClass.packParameter("menu", myMenu);
+        JavaTemplateRenderingClass.packParameter("infoContext", handleInfoContext(page));
+        JavaTemplateRenderingClass.packParameter("mainContent", handleBodyContent(page));
+        JavaTemplateRenderingClass.packCommonParameters();
     }
 
     /**

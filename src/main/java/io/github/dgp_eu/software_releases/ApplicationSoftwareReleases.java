@@ -43,7 +43,9 @@ public final class ApplicationSoftwareReleases {
      * @param args command-line arguments
      */
     /* default */ static void main(final String... args) {
-        CommonInteractiveClass.startMeUpWithParameters("logs/Software-Releases", "/software-releases-pom.xml");
+        final String logFullFilePath = System.getProperty("java.io.tmpdir")
+                + "LogsSoftwareReleases/Software-Releases";
+        CommonInteractiveClass.startMeUpWithParameters(logFullFilePath, "/software-releases-pom.xml");
         final int intWebExitCode = new CommandLine(new ApplicationSoftwareReleases()).execute(args);
         CommonInteractiveClass.shutMeDownWithParameters(intWebExitCode, args[0]);
     }

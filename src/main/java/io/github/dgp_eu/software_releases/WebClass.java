@@ -223,7 +223,7 @@ public final class WebClass {
         final Utf8ByteOutput output = new Utf8ByteOutput();
         JavaTemplateRenderingClass.setOutput(output);
         packAllParameters(page);
-        JavaTemplateRenderingClass.renderTemplate(templateEngine, "index.jte");
+        JavaTemplateRenderingClass.renderTemplate(templateEngine, "sr.jte");
     }
 
     /**

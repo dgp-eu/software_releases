@@ -63,27 +63,27 @@ public final class WebClass {
      */
     private static void buildMenu() {
         MAP_MENU.put("home", Map.of(
-                ConfigurationClass.STR_ICON, "fa-solid fa-house-user",
+                ConfigurationClass.STR_ICON, "fa-solid fa-house-user fa-2x",
                 ConfigurationClass.STR_MENU, "HomePage",
                 ConfigurationClass.STR_TITLE, "HomePage"));
         MAP_MENU.put(ConfigurationClass.STR_SOFTWARE_RLS, Map.of(
-                ConfigurationClass.STR_ICON, "fa-brands fa-dev",
+                ConfigurationClass.STR_ICON, "fa-brands fa-dev fa-2x",
                 ConfigurationClass.STR_MENU, STR_SOFT_RELEASES,
                 ConfigurationClass.STR_TITLE, STR_SOFT_RELEASES));
         MAP_MENU.put(ConfigurationClass.STR_TS, Map.of(
-                ConfigurationClass.STR_ICON, "fa-solid fa-square-poll-horizontal",
+                ConfigurationClass.STR_ICON, "fa-solid fa-square-poll-horizontal fa-2x",
                 ConfigurationClass.STR_MENU, "SQLite Table Statistics",
                 ConfigurationClass.STR_TITLE, "SQLite Table Statistics"));
         MAP_MENU.put(ConfigurationClass.STR_FILE_HASHING, Map.of(
-                ConfigurationClass.STR_ICON, "fa-solid fa-hashtag",
+                ConfigurationClass.STR_ICON, "fa-solid fa-hashtag fa-2x",
                 ConfigurationClass.STR_MENU, "Downloads File Hashing",
                 ConfigurationClass.STR_TITLE, "Downloads File Hashing"));
         MAP_MENU.put(ConfigurationClass.STR_ENV_DTLS, Map.of(
-                ConfigurationClass.STR_ICON, "fa-solid fa-computer",
+                ConfigurationClass.STR_ICON, "fa-solid fa-computer fa-2x",
                 ConfigurationClass.STR_MENU, "Environment Details",
                 ConfigurationClass.STR_TITLE, "Environment Details"));
         MAP_MENU.put("locationSun", Map.of(
-                ConfigurationClass.STR_ICON, "fa-solid fa-business-time",
+                ConfigurationClass.STR_ICON, "fa-solid fa-business-time fa-2x",
                 ConfigurationClass.STR_MENU, "Location Time",
                 ConfigurationClass.STR_TITLE, "Location Time"));
     }

@@ -2,8 +2,8 @@
 @param Content appCopyright
 @param Content appDetails
 @param Content infoContext
-@param Content menu
 @param Content mainContent
+@param Content menu
 @param Content timeZoneSelect
 @param String currentPageQuery
 @param String geoCoordinates
@@ -19,6 +19,7 @@
     <meta name="Author" content="Daniel Popiniuc">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/web/static/sr.css">
+    <script src="/web/static/sidebar.js" defer></script>
     <!-- Fontawesome components -->
     <link rel="stylesheet" href="/web/static/FontAwesome/7.3.1/fontawesome.min.css">
     <script src="/web/static/FontAwesome/7.3.1/brands.min.js" defer></script>
@@ -28,19 +29,21 @@
     <!-- Tabber components -->
     <link rel="stylesheet" href="/web/static/Tabber/1.0.0/tabber.css">
     <script src="/web/static/Tabber/1.0.0/tabber.min.js" defer></script>
-    <!-- Sidebar components -->
-    <script src="/web/static/sidebar.js" defer></script>
 </head>
 <body>
     <style type="text/css">.tabber{display:none;}</style>
     <header id="TitleContainer">
         <h1 id="PageTitle">${title}</h1>
         <span id="now" class="nowClass">${timeNow}</span>
-        <button id="openBtn" class="openbtn" onclick="openNav()">☰</button>
+        <a href="javascript:void(0);" id="openBtn" class="openbtn" onclick="openNav()">
+            <i class="fa-solid fa-ellipsis"></i>
+        </a>
         <div class="infoContextClass blueShaddowBorderLeft" id="infoContextId">${infoContext}</div>
     </header>
     <nav id="mySidebar" class="sidebar">
-        <a href="javascript:void(0);" class="closebtn" onclick="closeNav()">×</a>
+        <a href="javascript:void(0);" id="closeBtn" class="closebtn" onclick="closeNav()">
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+        </a>
         <ul>${menu}</ul>
     </nav>
     <main id="main">
@@ -55,8 +58,8 @@
             <input type="hidden" name="page" value="Localization">
             <input type="hidden" name="redirectAction" value="${currentPageQuery}">
         </form>
-        <span id="app" class="appDetails">${appDetails}</span>
-        <span id="app" class="appCopyright">${appCopyright}</span>
+        <span id="appDetails" class="appDetails">${appDetails}</span>
+        <span id="appCopyright" class="appCopyright">${appCopyright}</span>
     </footer>
 </body>
 </html>

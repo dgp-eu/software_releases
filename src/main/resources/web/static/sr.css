@@ -42,7 +42,7 @@
     position: fixed;
     right: 0.5rem;
     top: 1.5rem;
-    width: 12.5rem;
+    width: 20rem;
     z-index: 990 !important;
 }
 
@@ -55,10 +55,6 @@
 
 .openbtn {
     visibility: visible;
-}
-
-.openbtn:hover {
-    color: #000;
 }
 
 .sidebar {
@@ -75,10 +71,6 @@
     display: block;
 }
 
-.sidebar a:hover {
-    color: yellow;
-}
-
 .timeZoneFormClass {
     float: left;
     font-size: 0.8rem;
@@ -91,6 +83,7 @@ a, a:hover, a:link, a:visited {
 }
 
 a:hover {
+    color: MediumBlue;
     text-shadow: 1px 1px 2px #999;
 }
 

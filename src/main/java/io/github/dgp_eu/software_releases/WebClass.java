@@ -2,32 +2,21 @@
 package io.github.dgp_eu.software_releases;
 
 import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.SequencedMap;
-import java.util.stream.Collectors;
 
 import org.jspecify.annotations.NonNull;
 
 import gg.jte.TemplateEngine;
 import gg.jte.output.Utf8ByteOutput;
-import io.github.dgp_eu.tools.core.BasicStructuresClass;
 import io.github.dgp_eu.tools.core.ConfigurationClass;
-import io.github.dgp_eu.tools.core.FileOperationsClass;
 import io.github.dgp_eu.tools.core.LogExposureClass;
 import io.github.dgp_eu.tools.core.ProjectClass;
 import io.github.dgp_eu.tools.core.time.TimingClass;
-import io.github.dgp_eu.tools.dynamic.JsonOperationsClass;
-import io.github.dgp_eu.tools.dynamic.database.DatabaseOperationsClass;
 import io.github.dgp_eu.tools.dynamic.database.DatabaseSpecificSqLiteClass;
 import io.github.dgp_eu.tools.dynamic.web.JavaTemplateRenderingClass;
 import io.github.dgp_eu.tools.dynamic.web.HtmlClass;
@@ -35,8 +24,6 @@ import io.github.dgp_eu.tools.dynamic.web.UndertowClass;
 import io.github.dgp_eu.tools.dynamic.web.UndertowParametersClass;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.HeaderMap;
-import tools.jackson.databind.JsonNode;
 
 /**
  * Web interface class
@@ -47,7 +34,7 @@ public final class WebClass {
     /** Menu */
     private static final SequencedMap<String, Map<String, String>> MAP_MENU = new LinkedHashMap<>();
     /** Intentionally empty table properties for views that require no extra options. */
-    private static final Properties EMPTY_TABLE_PROPS = new Properties();
+    public static final Properties EMPTY_TABLE_PROPS = new Properties();
     /** Variable for Folders relevant for Checksum Exposure */
     private static String[] strFolderNames = new String[0];
     /** Variable for JSON file with Locations */
@@ -55,6 +42,20 @@ public final class WebClass {
 
     static {
         buildMenu();
+    }
+
+    /**
+     * Getter for jsonLocations
+     */
+    public static String[] getFolderNames() {
+        return Arrays.copyOf(strFolderNames, strFolderNames.length);
+    }
+
+    /**
+     * Getter for jsonLocations
+     */
+    public static String getJsonLocationsFile() {
+        return jsonLocations;
     }
 
     /**
@@ -89,129 +90,6 @@ public final class WebClass {
     }
 
     /**
-     * Outputs file statistics into an HTML table
-     * @return String
-     */
-    private static String getEnvironmentDetailsAsHtmlTable() {
-        final Properties objFeatures = new Properties();
-        objFeatures.put(ConfigurationClass.STR_NEW_TAB, ConfigurationClass.STR_CATEGORY);
-        final List<Properties> envDetails = EnvironmentCapturingAssembleClass.packageCurrentEnvironmentDetailsIntoListOfProperties();
-        final List<String> desiredOrder = List.of(ConfigurationClass.STR_CATEGORY, "Element", "Value");
-        final List<SequencedMap<Object, Object>> orderedList = envDetails.stream()
-                .map(prop -> BasicStructuresClass.ListAndMapSubClass.sortProperties(prop, desiredOrder))
-                .toList();
-        return "<div><a href=\"?page=downloadEnvironmentDetailsAsJSONfile\">Dowload to a JSON file</a></div>"
-                + HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(orderedList, objFeatures);
-    }
-
-    /**
-     * Outputs file statistics into an HTML table
-     * @return String
-     */
-    private static String getFileHashingAsHtmlTable() {
-        final String[] inAlgorithms = {"SHA-256"};
-        FileOperationsClass.StatisticsSubClass.setChecksumAlgorithms(inAlgorithms);
-        final String[] folderNames = Arrays.copyOf(strFolderNames, strFolderNames.length);
-        final List<Properties> foldersStatistics = new ArrayList<>();
-        for(final String crtFolderName: folderNames) {
-            final String strFeedback = String.format("Will process folder %s", crtFolderName);
-            LogExposureClass.LOGGER.info(strFeedback);
-            final ZonedDateTime refTimeStamp = TimingClass.getCurrentZonedDateTime();
-            final List<Properties> crtFileStatistics = FileOperationsClass.StatisticsSubClass.getFileStatisticsIntoListOfProperties(crtFolderName, refTimeStamp);
-            foldersStatistics.addAll(crtFileStatistics);
-        }
-        final List<String> desiredOrder = List.of("Folder", "File", "Size [bytes]", ConfigurationClass.STR_SIZE, "SHA-256", "Last Modified Timestamp", "Last Modified Aging");
-        final List<SequencedMap<Object, Object>> orderedList = foldersStatistics.stream()
-                .map(prop -> BasicStructuresClass.ListAndMapSubClass.sortProperties(prop, desiredOrder))
-                .toList();
-        return HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(orderedList, EMPTY_TABLE_PROPS);
-    }
-
-    /**
-     * Sun details for all Locations with JSON
-     * @return String with UI of Locations as tabs
-     */
-    private static String getLocationSunDetailsAsHtmlTable() {
-        final JsonNode jsonArray = JsonOperationsClass.getJsonFileNodes(Path.of(jsonLocations));
-        StringBuilder sbReturn = new StringBuilder(100);
-        sbReturn.append("<div id=\"tabStandard\" class=\"tabber\">");
-        jsonArray.forEach(crtLocation -> {
-            SunClass.setZoneId(crtLocation.get("TimeZoneName").toString().replace("\"", ""));
-            SunClass.setLatitude(Double.parseDouble(crtLocation.get("Latitude").toString()));
-            SunClass.setLongitude(Double.parseDouble(crtLocation.get("Longitude").toString()));
-            final String strTabTitle = crtLocation.get("LocationPlaceDivisionCountry").toString().replace("\"", "");
-            final Map<String, Object> mapSunRiseAndSet = SunClass.getSunRiseAndSet(strTabTitle);
-            final String strFeedback = String.format("LocationPlaceDivisionCountry is %s and has details as %s",
-                    strTabTitle,
-                    mapSunRiseAndSet.toString());
-            LogExposureClass.LOGGER.debug(strFeedback);
-            final Map<String, Object> sortedSun = mapSunRiseAndSet.entrySet().stream()
-                    .sorted(Comparator.comparing(Map.Entry::getKey))
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey,
-                            Map.Entry::getValue,
-                            (e1, _) -> e1, // merge function (not used here)
-                            LinkedHashMap::new // preserve sorted order
-                    ));
-            sbReturn.append("<div class=\"tabbertab\" title=\"")
-                    .append(strTabTitle)
-                    .append("\">")
-                    .append("<table style=\"float:left;\">");
-            sortedSun.forEach((crtKey, crtValue) -> {
-                if (!crtValue.equals(strTabTitle)) {
-                    sbReturn.append("<tr>")
-                           .append("<th style=\"text-align:left;\">").append(crtKey).append("</th>")
-                           .append("<td>").append(crtValue).append("</td>")
-                           .append("</tr>");
-                }
-            });
-            sbReturn.append("</table>")
-                    .append("<div style=\"float:none;clear:both;height:5px;\">&nbsp;</div>")
-                    .append("</div><!-- %s -->");
-        });
-        sbReturn.append("</div><!-- tabStandard -->");
-        return sbReturn.toString();
-    }
-
-    /**
-     * expose Software Release details from internal DB
-     * @return String software releases details
-     */
-    private static String getSoftwareReleasesIntoHtmlTable() {
-        String strReturn = "No software releases found.";
-        final List<Properties> softwareReleases = SoftwareReleasesSubClass.consolidateSoftwareReleases();
-        if (!softwareReleases.isEmpty()) {
-            final List<String> desiredOrder = List.of("Organization", "Product", "Version", "Date", "Files");
-            final List<SequencedMap<Object, Object>> orderedList = softwareReleases.stream()
-                    .map(prop -> BasicStructuresClass.ListAndMapSubClass.sortProperties(prop, desiredOrder))
-                    .toList();
-            final Properties objFeatures = new Properties();
-            objFeatures.put(ConfigurationClass.STR_NEW_TAB, "Profile");
-            strReturn = HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(orderedList, objFeatures);
-        }
-        return strReturn;
-    }
-
-    /**
-     * Body content handler
-     * @param page page identifier
-     * @return web Content
-     */
-    public static gg.jte.Content handleBodyContent(final String page) {
-        return output -> output.writeContent(switch(page) {
-            case ConfigurationClass.STR_ENV_DTLS      -> getEnvironmentDetailsAsHtmlTable();
-            case ConfigurationClass.STR_FILE_HASHING  -> getFileHashingAsHtmlTable();
-            case ConfigurationClass.STR_SOFTWARE_RLS  -> getSoftwareReleasesIntoHtmlTable();
-            case "locationSun"                        -> getLocationSunDetailsAsHtmlTable();
-            case ConfigurationClass.STR_TS            -> HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(
-                    DatabaseSpecificSqLiteClass.SqLiteStatisticsSubClass.getTableStatisticsIntoListForHtmlTable(),
-                    EMPTY_TABLE_PROPS);
-            default                                   -> String.format("Welcome %s",
-                    System.getProperty("user.name", "UNKNOWN user.name"));
-        });
-    }
-
-    /**
      * Handle HTML content
      * @param inExchange input Exchange
      * @param page id for the content
@@ -241,25 +119,6 @@ public final class WebClass {
     }
 
     /**
-     * Handle JSON content with Environment details
-     * @param inExchange input Exchange
-     */
-    private static void handleJsonContent(final HttpServerExchange inExchange) {
-        final String jsonEnvironment = EnvironmentCapturingAssembleClass.packageCurrentEnvironmentDetailsIntoJson();
-        final Utf8ByteOutput outputJson = new Utf8ByteOutput();
-        outputJson.writeContent(jsonEnvironment);
-        JavaTemplateRenderingClass.setOutput(outputJson);
-        JavaTemplateRenderingClass.setContentTypeValue("application/json");
-        final String strContentDisp = String.format("attachment; filename=\"environment__%s__%s.json\";",
-                EnvironmentCapturingAssembleClass.getComputerName("UNNAMED_COMPUTER"),
-                TimingClass.getCurrentDateTimeUniveralTimeCoordination().replaceAll("[-:\\s\\.]", "_"));
-        JavaTemplateRenderingClass.setContentDisposition(strContentDisp);
-        final HeaderMap header = inExchange.getResponseHeaders();
-        JavaTemplateRenderingClass.handleResponseHeader(header);
-        inExchange.getResponseSender().send(jsonEnvironment);
-    }
-
-    /**
      * Handle web content
      * @return PathHandler web content
      */
@@ -269,8 +128,9 @@ public final class WebClass {
             UndertowClass.handleQueryParametersAndPage(exchange);
             JavaTemplateRenderingClass.setServerExchange(exchange);
             final String page = UndertowParametersClass.getPageParameter();
-            if ("downloadEnvironmentDetailsAsJSONfile".equalsIgnoreCase(page)) {
-                handleJsonContent(exchange);
+            final String jsonPage = "downloadEnvironmentDetailsAsJSONfile";
+            if (page.equalsIgnoreCase(jsonPage)) {
+                ContentClass.handleJsonContent(exchange);
             } else {
                 handleHtmlContent(exchange, page);
             }
@@ -296,7 +156,7 @@ public final class WebClass {
         final gg.jte.Content myMenu = output -> output.writeContent(HtmlClass.buildMenuString(MAP_MENU));
         JavaTemplateRenderingClass.packParameter("menu", myMenu);
         JavaTemplateRenderingClass.packParameter("infoContext", handleInfoContext(page));
-        JavaTemplateRenderingClass.packParameter("mainContent", handleBodyContent(page));
+        JavaTemplateRenderingClass.packParameter("mainContent", ContentClass.handleBodyContent(page));
         JavaTemplateRenderingClass.packCommonParameters();
     }
 
@@ -314,106 +174,6 @@ public final class WebClass {
      */
     public static void setJsonLocationsFile(@NonNull final String inJsonLocations) {
         jsonLocations = inJsonLocations;
-    }
-
-    /**
-     * Handling Software releases logic
-     */
-    public static final class SoftwareReleasesSubClass {
-
-        /**
-         * expose Software Release details from internal DB
-         * @return List software releases details
-         */
-        public static List<Properties> consolidateSoftwareReleases() {
-            final List<Properties> softwareReleases = new ArrayList<>();
-            final List<Properties> resultReleases = getSoftwareReleasesFromDatabase();
-            if (!resultReleases.isEmpty()) {
-                resultReleases.forEach(recordProperties -> {
-                    final Properties newProperties = new Properties();
-                    newProperties.put("Organization",
-                            String.format("%s<div style=\"text-align:right;\">[%s]</div>",
-                                    recordProperties.get("OrganizationName"),
-                                    recordProperties.get("OrganizationId")));
-                    newProperties.put("Product",
-                            String.format("<a href=\"%s\" target=\"_blank\"><span style=\"float:left;\">%s<br/>[%s]</span><span style=\"float:right;text-align:right;\">%s<br/>[%s]</span></a>",
-                                    recordProperties.get("Releases"),
-                                    recordProperties.get("ProductName"),
-                                    recordProperties.get("ProductId"),
-                                    recordProperties.get("BranchName"),
-                                    recordProperties.get("BranchId")));
-                    newProperties.put("Version",
-                            String.format("%s<div style=\"text-align:right;\">[%s]</div>",
-                                    recordProperties.get("Latest release version"),
-                                    recordProperties.get("VersionId")));
-                    newProperties.put("Date",
-                            String.format("%s<br>==> %s",
-                                    recordProperties.get("Latest release date"),
-                                    recordProperties.get("Latest release aging full").toString()));
-                    newProperties.put("Files",
-                            String.format("%s [%s]<br/>==> %s [%s]",
-                                    recordProperties.get("File Kit Name"),
-                                    recordProperties.get("File Kit Id"),
-                                    recordProperties.get("File Installed Name"),
-                                    recordProperties.get("File Installed Id")));
-                    newProperties.put("Profile",
-                            recordProperties.get("Profile Name"));
-                    String lastRlsAgingDays = String.valueOf(recordProperties.get("Latest release aging days"));
-                    if (ConfigurationClass.STR_NULL.equals(lastRlsAgingDays)) {
-                        lastRlsAgingDays = "";
-                    }
-                    newProperties.put(ConfigurationClass.STR_ROW_STYLE,
-                            establishRowStyle(lastRlsAgingDays.replaceAll("\\.0$", "")));
-                    softwareReleases.add(newProperties);
-                });
-            }
-            return softwareReleases;
-        }
-
-        /**
-         * Row Style logic
-         * @param agingDays number of days
-         * @return String row style
-         */
-        private static String establishRowStyle(final String agingDays) {
-            String strRowColor = "#fff"; // white
-            if (!agingDays.isEmpty()) {
-                final long[] longRanges = {14, 30, 90};
-                final long longAging = BasicStructuresClass.convertStringIntoLong(agingDays);
-                if (longAging <= longRanges[0]) {
-                    strRowColor = "#51ff6d"; // bright green
-                } else if (longAging <= longRanges[1]) {
-                    strRowColor = "#ccffe8"; // washed out green
-                } else if (longAging <= longRanges[2]) {
-                    strRowColor = "#fdffcc"; // washed out yellow
-                }
-            }
-            return String.format("background-color:%s;", strRowColor);
-        }
-
-        /**
-         * expose Software Release details from internal DB
-         * @return List software releases details
-         */
-        private static List<Properties> getSoftwareReleasesFromDatabase() {
-            List<Properties> resultReleases = new ArrayList<>();
-            try (Connection objConnection = DatabaseSpecificSqLiteClass.getSqLiteConnection();
-                 Statement objStatement = DatabaseOperationsClass.ConnectivitySubClass.createSqlStatement(ConfigurationClass.STR_SQLITE, objConnection)) {
-                final String queryToUse = DatabaseOperationsClass.getPreDefinedQuery(ConfigurationClass.STR_SQLITE, "ReleasesListProductBranches");
-                final Properties rsProperties = DatabaseOperationsClass.packageResultSetProperties(STR_SOFT_RELEASES, queryToUse);
-                resultReleases = DatabaseOperationsClass.ResultSettingSubClass.getResultSetStandardized(objStatement, rsProperties, new Properties());
-            } catch (SQLException e) {
-                final String strFeedbackErr = String.format("%s connection has failed %s", ConfigurationClass.STR_SQLITE, e.getLocalizedMessage());
-                LogExposureClass.LOGGER.debug(strFeedbackErr);
-            }
-            return resultReleases;
-        }
-
-        // Private constructor to prevent instantiation
-        private SoftwareReleasesSubClass() {
-            // intentional empty
-        }
-
     }
 
     private WebClass() {

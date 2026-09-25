@@ -1,7 +1,7 @@
 /*
  * Copyright 2026 Daniel-Gheorghe Popiniuc
  */
-package io.github.dgp_eu.software_releases;
+package io.github.dgp_eu.software_releases.environment;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,6 +15,7 @@ import oshi.hardware.Baseboard;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.ComputerSystem;
 import oshi.hardware.Display;
+import oshi.hardware.DisplayInfo;
 import oshi.hardware.Firmware;
 import oshi.hardware.GlobalMemory;
 import oshi.hardware.GraphicsCard;
@@ -157,6 +158,15 @@ public final class OshiUsageClass {
          */
         public static List<Display> getOshiMonitor() {
             return getOshiHardware().getDisplays();
+        }
+
+        /**
+         * get DisplayInfo for a given Display
+         * @param crtDisplay input Display
+         * @return DisplayInfo
+         */
+        public static DisplayInfo getDisplayInfo(final Display crtDisplay) {
+            return crtDisplay.getDisplayInfo();
         }
 
         /**

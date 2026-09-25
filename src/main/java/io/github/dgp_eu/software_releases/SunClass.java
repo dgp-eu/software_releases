@@ -3,8 +3,6 @@
  */
 package io.github.dgp_eu.software_releases;
 
-import static java.lang.Math.*;
-
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -38,7 +36,7 @@ public final class SunClass {
     /** Properties for output */
     private static final Map<String, Object> MAP_SUN = new ConcurrentHashMap<>();
     /** formatter Variable */
-    /* default */ private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(TimingClass.DATE_TIME_MS_LONG, Locale.US);
+    /* default */ private static final DateTimeFormatter APPLIED_FORMATER = DateTimeFormatter.ofPattern(TimingClass.DATE_TIME_MS_LONG, Locale.US);
 
     /**
      * Calculates Sunrise and Sunset for a given location
@@ -48,16 +46,16 @@ public final class SunClass {
     public static Map<String, Object> getSunRiseAndSet(final String crtLocationDetail) {
         final ZonedDateTime nowZ = ZonedDateTime.now(internalZoneId);
         MAP_SUN.put("Location [Street, City, Division, Country]", crtLocationDetail);
-        MAP_SUN.put("Current Timestamp", nowZ.format(formatter));
+        MAP_SUN.put("Current Timestamp", nowZ.format(APPLIED_FORMATER));
         final ZonedDateTime sunrise = calculateSunSetOrRise(nowZ, true);
         if (sunrise != null) {
-            MAP_SUN.put("Today Sunrise", sunrise.format(formatter));
+            MAP_SUN.put("Today Sunrise", sunrise.format(APPLIED_FORMATER));
         } else {
             MAP_SUN.put("Today Sunrise", "Sun does not rise on this date at this location");
         }
         final ZonedDateTime sunset = calculateSunSetOrRise(nowZ, false);
         if (sunset != null) {
-            MAP_SUN.put("Today Sunset", sunset.format(formatter));
+            MAP_SUN.put("Today Sunset", sunset.format(APPLIED_FORMATER));
         } else {
             MAP_SUN.put("Today Sunset", "Sun does not set on this date at this location");
         }
@@ -85,28 +83,28 @@ public final class SunClass {
         final double sunMeanAnomaly = (0.9856 * estimatedTime) - 3.289;
         // 3. Sun's true longitude
         double sunLongitude = sunMeanAnomaly
-                + (1.916 * sin(toRadians(sunMeanAnomaly)))
-                + (0.020 * sin(toRadians(2 * sunMeanAnomaly)))
+                + (1.916 * Math.sin(Math.toRadians(sunMeanAnomaly)))
+                + (0.020 * Math.sin(Math.toRadians(2 * sunMeanAnomaly)))
                 + 282.634;
         sunLongitude = (sunLongitude + 360) % 360;
         // 4. Sun's right ascension
-        double sunRightAscension = toDegrees(atan(0.917_64 * tan(toRadians(sunLongitude))));
+        double sunRightAscension = Math.toDegrees(Math.atan(0.917_64 * Math.tan(Math.toRadians(sunLongitude))));
         sunRightAscension = (sunRightAscension + 360) % 360;
         // Adjust quadrant of sunRightAscension
-        final double lQuadrant = floor(sunLongitude / 90) * 90;
-        final double raQuadrant = floor(sunRightAscension / 90) * 90;
+        final double lQuadrant = Math.floor(sunLongitude / 90) * 90;
+        final double raQuadrant = Math.floor(sunRightAscension / 90) * 90;
         sunRightAscension = (sunRightAscension + (lQuadrant - raQuadrant)) / 15.0;
         // 5. Sun's declination
-        final double sinDec = 0.397_82 * sin(toRadians(sunLongitude));
-        final double cosDec = cos(asin(sinDec));
+        final double sinDec = 0.397_82 * Math.sin(Math.toRadians(sunLongitude));
+        final double cosDec = Math.cos(Math.asin(sinDec));
         // 6. Local hour angle
-        final double cosH = (cos(toRadians(ZENITH))
-                - (sinDec * sin(toRadians(dblLatitude)))) / (cosDec * cos(toRadians(dblLatitude)));
+        final double cosH = (Math.cos(Math.toRadians(ZENITH))
+                - (sinDec * Math.sin(Math.toRadians(dblLatitude)))) / (cosDec * Math.cos(Math.toRadians(dblLatitude)));
         ZonedDateTime outZonedDateTime = inNowZ;
         if (cosH >= -1
                 && cosH <= 1) { // only if Sun rises/sets
             // 7. Local mean time
-            final double localMeanHour = (isSunrise ? (360 - toDegrees(acos(cosH))) : toDegrees(acos(cosH))) / 15.0;
+            final double localMeanHour = (isSunrise ? (360 - Math.toDegrees(Math.acos(cosH))) : Math.toDegrees(Math.acos(cosH))) / 15.0;
             final double localMeanTime = localMeanHour + sunRightAscension - (0.065_71 * estimatedTime) - 6.622;
             // 8. UTC time
             final double utcTime = (localMeanTime - lonHour + 24) % 24;
@@ -126,16 +124,16 @@ public final class SunClass {
     private static void enhanceSunStatistics(final ZonedDateTime nowZ, final ZonedDateTime sunrise, final ZonedDateTime sunset) {
         final ZonedDateTime yesterdayZ = ZonedDateTime.now(internalZoneId).minusDays(1);
         final ZonedDateTime sunrisePrior = calculateSunSetOrRise(yesterdayZ, true);
-        MAP_SUN.put("Yesterday Sunrise", sunrisePrior.format(formatter));
+        MAP_SUN.put("Yesterday Sunrise", sunrisePrior.format(APPLIED_FORMATER));
         final ZonedDateTime sunsetPrior = calculateSunSetOrRise(yesterdayZ, false);
-        MAP_SUN.put("Yesterday Sunset", sunsetPrior.format(formatter));
+        MAP_SUN.put("Yesterday Sunset", sunsetPrior.format(APPLIED_FORMATER));
         MAP_SUN.put("Yesterday Light duration", TimingClass.AgingSubClass.computeAgingIntoHumanReadableWords(sunrisePrior, sunsetPrior));
         MAP_SUN.put("Yesterday Night Duration", TimingClass.AgingSubClass.computeAgingIntoHumanReadableWords(sunsetPrior, sunrise));
         final ZonedDateTime tomorrowZ = ZonedDateTime.now(internalZoneId).plusDays(1);
         final ZonedDateTime sunriseNext = calculateSunSetOrRise(tomorrowZ, true);
-        MAP_SUN.put("Tomorrow Sunrise", sunriseNext.format(formatter));
+        MAP_SUN.put("Tomorrow Sunrise", sunriseNext.format(APPLIED_FORMATER));
         final ZonedDateTime sunsetNext = calculateSunSetOrRise(tomorrowZ, false);
-        MAP_SUN.put("Tomorrow Sunset", sunsetNext.format(formatter));
+        MAP_SUN.put("Tomorrow Sunset", sunsetNext.format(APPLIED_FORMATER));
         MAP_SUN.put("Tomorrow Light duration", TimingClass.AgingSubClass.computeAgingIntoHumanReadableWords(sunriseNext, sunsetNext));
         MAP_SUN.put("Today Night duration", TimingClass.AgingSubClass.computeAgingIntoHumanReadableWords(sunset, sunriseNext));
         String strSunSituation = "DOWN";

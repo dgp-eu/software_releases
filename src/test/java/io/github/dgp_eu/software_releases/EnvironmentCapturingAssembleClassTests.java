@@ -8,6 +8,7 @@ import java.util.Properties;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import io.github.dgp_eu.software_releases.environment.EnvironmentCapturingAssembleClass;
 import io.github.dgp_eu.tools.core.ProjectClass;
 
 /**

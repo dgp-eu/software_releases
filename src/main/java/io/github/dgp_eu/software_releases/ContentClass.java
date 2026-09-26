@@ -30,7 +30,7 @@ import tools.jackson.databind.JsonNode;
  */
 public final class ContentClass {
 
-    // Private constructor to prevent instantiation
+    /** Private constructor to prevent instantiation */
     private ContentClass() {
         // intentional empty
     }
@@ -71,7 +71,7 @@ public final class ContentClass {
         final List<SequencedMap<Object, Object>> orderedList = foldersStatistics.stream()
                 .map(prop -> BasicStructuresClass.ListAndMapSubClass.sortProperties(prop, desiredOrder))
                 .toList();
-        return HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(orderedList, WebClass.EMPTY_TABLE_PROPS);
+        return HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(orderedList, new Properties());
     }
 
     /**
@@ -145,7 +145,7 @@ public final class ContentClass {
             case "locationSun"                        -> getLocationSunDetailsAsHtmlTable();
             case ConfigurationClass.STR_TS            -> HtmlClass.TableSubClass.getListOfSequencedMapIntoHtmlTable(
                     DatabaseSpecificSqLiteClass.SqLiteStatisticsSubClass.getTableStatisticsIntoListForHtmlTable(),
-                    WebClass.EMPTY_TABLE_PROPS);
+                    new Properties());
             default                                   -> String.format("Welcome %s",
                     System.getProperty("user.name", "UNKNOWN user.name"));
         });

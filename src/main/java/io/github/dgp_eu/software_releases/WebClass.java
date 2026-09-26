@@ -6,7 +6,6 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.SequencedMap;
 
 import org.jspecify.annotations.NonNull;
@@ -33,8 +32,6 @@ public final class WebClass {
     public static final String STR_SOFT_RELEASES = "Software Releases";
     /** Menu */
     private static final SequencedMap<String, Map<String, String>> MAP_MENU = new LinkedHashMap<>();
-    /** Intentionally empty table properties for views that require no extra options. */
-    public static final Properties EMPTY_TABLE_PROPS = new Properties();
     /** Variable for Folders relevant for Checksum Exposure */
     private static String[] strFolderNames = new String[0];
     /** Variable for JSON file with Locations */

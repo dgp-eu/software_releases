@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.github.dgp_eu.tools.core.BasicStructuresClass;
 import io.github.dgp_eu.tools.core.ConfigurationClass;
+import org.jspecify.annotations.NonNull;
 import oshi.hardware.Baseboard;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.ComputerSystem;
@@ -41,7 +42,7 @@ public final class EnvironmentHardwareClass {
      * @param crtDisplay current Display object
      * @return String
      */
-    private static Map<String, Object> digestSingleDisplayDetails(final Display crtDisplay) {
+    private static @NonNull Map<String, Object> digestSingleDisplayDetails(final @NonNull Display crtDisplay) {
         final Map<String, Object> arrayAttributes = new ConcurrentHashMap<>();
         final String[] arrayDetails = crtDisplay.toString().replaceAll("[^a-zA-Z0-9\\s]", "").split("\n");
         for (final String crtLine : arrayDetails) {
@@ -100,7 +101,7 @@ public final class EnvironmentHardwareClass {
      *
      * @return Map
      */
-    public static Map<String, Object> getDetailsAboutGraphicCards() {
+    public static @NonNull Map<String, Object> getDetailsAboutGraphicCards() {
         final Map<String, Object> arrayAttributes = new ConcurrentHashMap<>();
         final List<GraphicsCard> graphicCards = OshiUsageClass.HardwareSubClass.getOshiGraphicsCards();
         for (final GraphicsCard  graphicCard : graphicCards) {
@@ -120,7 +121,7 @@ public final class EnvironmentHardwareClass {
      *
      * @return Map
      */
-    public static Map<String, Object> getDetailsAboutMonitor() {
+    public static @NonNull Map<String, Object> getDetailsAboutMonitor() {
         final Map<String, Object> arrayAttributes = new ConcurrentHashMap<>();
         final List<Display> displays = OshiUsageClass.HardwareSubClass.getOshiMonitor();
         for (final Display crtDisplay : displays) {// The EDID is the "fingerprint" of the monitor hardware
@@ -136,7 +137,7 @@ public final class EnvironmentHardwareClass {
      * Network details gathered
      * @return Map
      */
-    public static Map<String, Object> getDetailsAboutNetwork() {
+    public static @NonNull Map<String, Object> getDetailsAboutNetwork() {
         final NetworkParams networkParams = OshiUsageClass.SoftwareSubClass.getOshiNetworkParameters();
         return Map.of(
                 //"DNS Servers", String.join(", ", networkParams.getDnsServers()),
@@ -151,7 +152,7 @@ public final class EnvironmentHardwareClass {
      *
      * @return Map
      */
-    public static Map<String, Object> getDetailsAboutNetworkInterfaces() {
+    public static @NonNull Map<String, Object> getDetailsAboutNetworkInterfaces() {
         final Map<String, Object> arrayAttributes = new ConcurrentHashMap<>();
         final List<NetworkIF> networkIFs = OshiUsageClass.HardwareSubClass.getOshiNetworkInterfaces();
         for (final NetworkIF net : networkIFs) {
@@ -185,17 +186,17 @@ public final class EnvironmentHardwareClass {
      * Operating System details gathered
      * @return Map
      */
-    public static Map<String, Object> getDetailsAboutOperatingSystem() {
+    public static @NonNull Map<String, Object> getDetailsAboutOperatingSystem() {
         final OperatingSystem.OSVersionInfo version = OshiUsageClass.SoftwareSubClass.getOshiVersionInfo();
         return Map.of(
                 "Architecture", System.getProperty("os.arch", EnvironmentCapturingAssembleClass.STR_INSTEAD_NULL),
-                "Build", version.getBuildNumber(),
-                "Code", version.getCodeName(),
+                "Build", version.getBuildNumber() == null ? "" : version.getBuildNumber(),
+                "Code", version.getCodeName() == null ? "" : version.getCodeName(),
                 "Family", OshiUsageClass.SoftwareSubClass.getOshiFamily(),
                 ConfigurationClass.STR_MANUFACTURER, OshiUsageClass.SoftwareSubClass.getOshiManufacturer(),
                 ConfigurationClass.STR_NAME, System.getProperty("os.name", EnvironmentCapturingAssembleClass.STR_INSTEAD_NULL),
                 "Platform", PlatformEnum.getCurrentPlatform().toString(),
-                ConfigurationClass.STR_VERSION, version.getVersion());
+                ConfigurationClass.STR_VERSION, version.getVersion() == null ? "" : version.getVersion());
     }
 
     /**
@@ -203,7 +204,7 @@ public final class EnvironmentHardwareClass {
      *
      * @return Map
      */
-    public static Map<String, Object> getDetailsAboutRandomAccessMemory() {
+    public static @NonNull Map<String, Object> getDetailsAboutRandomAccessMemory() {
         final GlobalMemory globalMemory = OshiUsageClass.HardwareSubClass.getOshiMemory();
         final VirtualMemory virtualMemory = OshiUsageClass.HardwareSubClass.getOshiVirtualMemory();
         final Map<String, Object> arrayAttributes = new ConcurrentHashMap<>(Map.of(
@@ -269,7 +270,7 @@ public final class EnvironmentHardwareClass {
          * Main-board details gathered
          * @return Map
          */
-        public static Map<String, Object> getDetailsAboutMainboard() {
+        public static @NonNull Map<String, Object> getDetailsAboutMainboard() {
             final Map<String, Object> arrayAttributes = new ConcurrentHashMap<>(getDetailsAboutMotherboardIntoMap());
             arrayAttributes.putAll(getDetailsAboutFirmwareIntoMap());
             arrayAttributes.putAll(getDetailsAboutComputerSystemIntoMap());

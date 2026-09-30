@@ -23,6 +23,7 @@ import io.github.dgp_eu.tools.dynamic.web.JavaTemplateRenderingClass;
 import io.undertow.io.Sender;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HeaderMap;
+import org.jspecify.annotations.NonNull;
 import tools.jackson.databind.JsonNode;
 
 /**
@@ -39,7 +40,7 @@ public final class ContentClass {
      * Outputs file statistics into an HTML table
      * @return String
      */
-    private static String getEnvironmentDetailsAsHtmlTable() {
+    private static @NonNull String getEnvironmentDetailsAsHtmlTable() {
         final Properties objFeatures = new Properties();
         objFeatures.put(ConfigurationClass.STR_NEW_TAB, ConfigurationClass.STR_CATEGORY);
         final List<Properties> envDetails = EnvironmentCapturingAssembleClass.packageCurrentEnvironmentDetailsIntoListOfProperties();
@@ -55,7 +56,7 @@ public final class ContentClass {
      * Outputs file statistics into an HTML table
      * @return String
      */
-    private static String getFileHashingAsHtmlTable() {
+    private static @NonNull String getFileHashingAsHtmlTable() {
         final String[] inAlgorithms = {"SHA-256"};
         FileStatisticsClass.setChecksumAlgorithms(inAlgorithms);
         final String[] folderNames = WebClass.getFolderNames();
@@ -78,7 +79,7 @@ public final class ContentClass {
      * Sun details for all Locations with JSON
      * @return String with UI of Locations as tabs
      */
-    private static String getLocationSunDetailsAsHtmlTable() {
+    private static @NonNull String getLocationSunDetailsAsHtmlTable() {
         final JsonNode jsonArray = JsonOperationsClass.getJsonFileNodes(Path.of(WebClass.getJsonLocationsFile()));
         final StringBuilder sbReturn = new StringBuilder(1000);
         sbReturn.append("<div id=\"tabStandard\" class=\"tabber\">");
@@ -117,7 +118,7 @@ public final class ContentClass {
      * expose Software Release details from internal DB
      * @return String software releases details
      */
-    private static String getSoftwareReleasesIntoHtmlTable() {
+    private static @NonNull String getSoftwareReleasesIntoHtmlTable() {
         String strReturn = "No software releases found.";
         final List<Properties> softwareReleases = EnvironmentSoftwareReleasesSubClass.consolidateSoftwareReleases();
         if (!softwareReleases.isEmpty()) {
@@ -155,7 +156,7 @@ public final class ContentClass {
      * Handle JSON content with Environment details
      * @param inExchange input Exchange
      */
-    public static void handleJsonContent(final HttpServerExchange inExchange) {
+    public static void handleJsonContent(final @NonNull HttpServerExchange inExchange) {
         final String jsonEnvironment = EnvironmentCapturingAssembleClass.packageCurrentEnvironmentDetailsIntoJson();
         final Utf8ByteOutput outputJson = new Utf8ByteOutput();
         outputJson.writeContent(jsonEnvironment);

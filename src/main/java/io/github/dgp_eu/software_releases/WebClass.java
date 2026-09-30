@@ -57,7 +57,6 @@ public final class WebClass {
 
     /**
      * Menu builder
-     * @return SequencedMap for HTML menu
      */
     private static void buildMenu() {
         MAP_MENU.put("home", Map.of(

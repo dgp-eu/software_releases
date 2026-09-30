@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.github.dgp_eu.tools.core.BasicStructuresClass;
 import io.github.dgp_eu.tools.core.ConfigurationClass;
+import org.jspecify.annotations.NonNull;
 import oshi.ffm.SystemInfo;
 import oshi.hardware.Baseboard;
 import oshi.hardware.CentralProcessor;
@@ -67,7 +68,7 @@ public final class OshiUsageClass {
      *
      * @return Map
      */
-    public static Map<String, Object> getDetailsAboutAvailableStoragePartitions() {
+    public static @NonNull Map<String, Object> getDetailsAboutAvailableStoragePartitions() {
         final Map<String, Object> arrayAttributes = new ConcurrentHashMap<>();
         final FileSystem osFileSystem = SoftwareSubClass.getOshiFileSystem();
         final List<OSFileStore> osFileStores = osFileSystem.getFileStores();
@@ -92,7 +93,7 @@ public final class OshiUsageClass {
      * @param intPhysMedType number for NDIS Physical Medium Type
      * @return String
      */
-    public static String getNetworkPhysicalMediumType(final int intPhysMedType) {
+    public static @NonNull String getNetworkPhysicalMediumType(final int intPhysMedType) {
         return BasicStructuresClass.ListAndMapSubClass.getMapIntoJsonString(
                 Map.of("Numeric", intPhysMedType,
                         ConfigurationClass.STR_NAME, 
@@ -108,7 +109,7 @@ public final class OshiUsageClass {
         /**
          * Hardware info
          */
-        private static HardwareAbstractionLayer getOshiHardware() {
+        private static @NonNull HardwareAbstractionLayer getOshiHardware() {
             return SYSTEM_INFO.getHardware();
         }
 
@@ -116,7 +117,7 @@ public final class OshiUsageClass {
          * Computer System info
          * @return ComputerSystem
          */
-        public static ComputerSystem getOshiComputerSystem() {
+        public static @NonNull ComputerSystem getOshiComputerSystem() {
             return getOshiHardware().getComputerSystem();
         }
 
@@ -124,7 +125,7 @@ public final class OshiUsageClass {
          * Computer System Firmware
          * @return Firmware
          */
-        public static Firmware getOshiFirmware() {
+        public static @NonNull Firmware getOshiFirmware() {
             return getOshiComputerSystem().getFirmware();
         }
 
@@ -132,7 +133,7 @@ public final class OshiUsageClass {
          * get Video card attributes
          * @return List of GraphicsCard
          */
-        public static List<GraphicsCard> getOshiGraphicsCards() {
+        public static @NonNull List<GraphicsCard> getOshiGraphicsCards() {
             return getOshiHardware().getGraphicsCards();
         }
 
@@ -140,7 +141,7 @@ public final class OshiUsageClass {
          * Computer System Motherboard
          * @return Baseboard
          */
-        public static Baseboard getOshiMotherboard() {
+        public static @NonNull Baseboard getOshiMotherboard() {
             return getOshiComputerSystem().getBaseboard();
         }
 
@@ -148,7 +149,7 @@ public final class OshiUsageClass {
          * get RAM attributes
          * @return GlobalMemory
          */
-        public static GlobalMemory getOshiMemory() {
+        public static @NonNull GlobalMemory getOshiMemory() {
             return getOshiHardware().getMemory();
         }
 
@@ -156,7 +157,7 @@ public final class OshiUsageClass {
          * get Video card attributes
          * @return List of Display
          */
-        public static List<Display> getOshiMonitor() {
+        public static @NonNull List<Display> getOshiMonitor() {
             return getOshiHardware().getDisplays();
         }
 
@@ -165,7 +166,7 @@ public final class OshiUsageClass {
          * @param crtDisplay input Display
          * @return DisplayInfo
          */
-        public static DisplayInfo getDisplayInfo(final Display crtDisplay) {
+        public static @NonNull DisplayInfo getDisplayInfo(final @NonNull Display crtDisplay) {
             return crtDisplay.getDisplayInfo();
         }
 
@@ -173,7 +174,7 @@ public final class OshiUsageClass {
          * get Network attributes
          * @return List of NetworkIF
          */
-        public static List<NetworkIF> getOshiNetworkInterfaces() {
+        public static @NonNull List<NetworkIF> getOshiNetworkInterfaces() {
             return getOshiHardware().getNetworkIFs();
         }
 
@@ -181,7 +182,7 @@ public final class OshiUsageClass {
          * get CPU attributes
          * @return CentralProcessor
          */
-        public static CentralProcessor getOshiProcessor() {
+        public static @NonNull CentralProcessor getOshiProcessor() {
             return getOshiHardware().getProcessor();
         }
 
@@ -189,7 +190,7 @@ public final class OshiUsageClass {
          * get CPU identifier
          * @return CentralProcessor
          */
-        public static CentralProcessor.ProcessorIdentifier getOshiProcessorIdentifier() {
+        public static CentralProcessor.@NonNull ProcessorIdentifier getOshiProcessorIdentifier() {
             return getOshiProcessor().getProcessorIdentifier();
         }
 
@@ -197,7 +198,7 @@ public final class OshiUsageClass {
          * get Virtual Memory
          * @return VirtualMemory
          */
-        public static VirtualMemory getOshiVirtualMemory() {
+        public static @NonNull VirtualMemory getOshiVirtualMemory() {
             return getOshiMemory().getVirtualMemory();
         }
 
@@ -218,7 +219,7 @@ public final class OshiUsageClass {
         /**
          * Software info
          */
-        private static OperatingSystem getOshiSoftware() {
+        private static @NonNull OperatingSystem getOshiSoftware() {
             return SYSTEM_INFO.getOperatingSystem();
         }
 
@@ -226,7 +227,7 @@ public final class OshiUsageClass {
          * get OS Family
          * @return OperatingSystem Family
          */
-        public static String getOshiFamily() {
+        public static @NonNull String getOshiFamily() {
             return getOshiSoftware().getFamily();
         }
 
@@ -234,7 +235,7 @@ public final class OshiUsageClass {
          * get File System attributes
          * @return FileSystem
          */
-        public static FileSystem getOshiFileSystem() {
+        public static @NonNull FileSystem getOshiFileSystem() {
             return getOshiSoftware().getFileSystem();
         }
 
@@ -242,7 +243,7 @@ public final class OshiUsageClass {
          * get OS Manufacturer
          * @return OperatingSystem Manufacturer
          */
-        public static String getOshiManufacturer() {
+        public static @NonNull String getOshiManufacturer() {
             return getOshiSoftware().getManufacturer();
         }
 
@@ -250,7 +251,7 @@ public final class OshiUsageClass {
          * get NetworkParameters
          * @return Network parameters
          */
-        public static NetworkParams getOshiNetworkParameters() {
+        public static @NonNull NetworkParams getOshiNetworkParameters() {
             return getOshiSoftware().getNetworkParams();
         }
 
@@ -258,7 +259,7 @@ public final class OshiUsageClass {
          * get Version information
          * @return OperatingSystem.OSVersionInfo
          */
-        public static OperatingSystem.OSVersionInfo getOshiVersionInfo() {
+        public static OperatingSystem.@NonNull OSVersionInfo getOshiVersionInfo() {
             return getOshiSoftware().getVersionInfo();
         }
 

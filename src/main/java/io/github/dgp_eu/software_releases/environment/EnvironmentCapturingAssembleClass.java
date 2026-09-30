@@ -11,6 +11,7 @@ import io.github.dgp_eu.tools.core.ConfigurationClass;
 import io.github.dgp_eu.tools.core.LogExposureClass;
 import io.github.dgp_eu.tools.core.ProjectClass;
 import io.github.dgp_eu.tools.core.ShellingClass;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Capturing current environment details
@@ -125,33 +126,25 @@ public final class EnvironmentCapturingAssembleClass {
      * 
      * @return String
      */
-    public static String packageCurrentEnvironmentDetailsIntoJson() {
-        final StringBuilder strJsonString = new StringBuilder(1000).append('{');
+    public static @NonNull String packageCurrentEnvironmentDetailsIntoJson() {
+        final StringBuilder strJsonString = new StringBuilder(1000);
         final String strFeedback = "Capturing information...";
         LogExposureClass.LOGGER.info(strFeedback);
         final String strHardware = BasicStructuresClass.ListAndMapSubClass.getMapIntoJsonString(gatherHardwareDetails());
-        if (strHardware != null) {
-            strJsonString.append("\"Hardware\":").append(strHardware);
-        }
+        strJsonString.append("{\"Hardware\":").append(strHardware);
         final String strFeedbackH = "I just captured Hardware information...";
         LogExposureClass.LOGGER.debug(strFeedbackH);
         final String strSoftware = BasicStructuresClass.ListAndMapSubClass.getMapIntoJsonString(gatherSoftwareDetails());
-        if (strSoftware != null) {
-            strJsonString.append(",\"Software\":").append(strSoftware);
-        }
+        strJsonString.append(",\"Software\":").append(strSoftware);
         final String strFeedbackS = "I just captured Software information...";
         LogExposureClass.LOGGER.debug(strFeedbackS);
         final String strAppDetails = ProjectClass.ApplicationSubClass.getApplicationDetails();
-        if (strAppDetails != null) {
-            strJsonString.append(',').append(strAppDetails);
-        }
+        strJsonString.append(',').append(strAppDetails);
         final String strEnvironment = BasicStructuresClass.ListAndMapSubClass.getMapIntoJsonString(gatherEnvironmentDetails());
         final String strFeedbackEnv = "I just captured Environment information...";
         LogExposureClass.LOGGER.debug(strFeedbackEnv);
-        if (strEnvironment != null) {
-            strJsonString.append(",\"Environment\":").append(strEnvironment);
-        }
-        return BasicStructuresClass.StringCleaningSubClass.ensureEscapingOnEndOfLineAndTabs(strJsonString.append('}').toString());
+        strJsonString.append(",\"Environment\":").append(strEnvironment).append('}');
+        return BasicStructuresClass.StringCleaningSubClass.ensureEscapingOnEndOfLineAndTabs(strJsonString.toString());
     }
 
     /**
@@ -159,7 +152,7 @@ public final class EnvironmentCapturingAssembleClass {
      * 
      * @return String
      */
-    public static List<Properties> packageCurrentEnvironmentDetailsIntoListOfProperties() {
+    public static @NonNull List<Properties> packageCurrentEnvironmentDetailsIntoListOfProperties() {
         final List<Properties> resultReleases = new ArrayList<>();
         resultReleases.addAll(BasicStructuresClass.ListAndMapSubClass.convertMapOfStringsIntoListOfProperties("Environment", gatherEnvironmentDetails()));
         resultReleases.addAll(BasicStructuresClass.ListAndMapSubClass.convertMapOfStringsIntoListOfProperties("Hardware - CPU", EnvironmentHardwareClass.getDetailsAboutCentralProcessorUnit()));

@@ -11,6 +11,7 @@ import io.github.dgp_eu.tools.core.LogExposureClass;
 import io.github.dgp_eu.tools.dynamic.JsonOperationsClass;
 import io.github.dgp_eu.tools.dynamic.database.DatabaseSpecificMySqlClass;
 import io.github.dgp_eu.tools.dynamic.database.DatabaseSpecificSnowflakeClass;
+import org.jspecify.annotations.NonNull;
 import picocli.CommandLine;
 import tools.jackson.databind.JsonNode;
 
@@ -83,7 +84,7 @@ class GetInformationFromDatabase implements Runnable {
         }
     }
 
-    private static Properties getEnvironmentVariableValueForMySql() {
+    private static @NonNull Properties getEnvironmentVariableValueForMySql() {
         final Properties properties = new Properties();
         final String envValue = ConfigurationClass.getEnvironmentVariableValue("MYSQL");
         final JsonNode ndMySQL = JsonOperationsClass.getJsonFileNodes(envValue);
@@ -100,7 +101,7 @@ class GetInformationFromDatabase implements Runnable {
      *
      * @param strDatabaseType type of Database (predefined values)
      */
-    private static void performAction(final String strDatabaseType, final String strLclInfoType) {
+    private static void performAction(final @NonNull String strDatabaseType, final String strLclInfoType) {
         Properties properties = new Properties();
         switch (strDatabaseType) {
             case "MySQL":

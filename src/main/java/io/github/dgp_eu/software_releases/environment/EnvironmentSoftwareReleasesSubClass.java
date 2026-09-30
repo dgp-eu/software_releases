@@ -13,6 +13,7 @@ import io.github.dgp_eu.tools.core.ConfigurationClass;
 import io.github.dgp_eu.tools.core.LogExposureClass;
 import io.github.dgp_eu.tools.dynamic.database.DatabaseOperationsClass;
 import io.github.dgp_eu.tools.dynamic.database.DatabaseSpecificSqLiteClass;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Handling Software releases logic
@@ -28,37 +29,47 @@ public final class EnvironmentSoftwareReleasesSubClass {
      * expose Software Release details from internal DB
      * @return List software releases details
      */
-    public static List<Properties> consolidateSoftwareReleases() {
+    public static @NonNull List<Properties> consolidateSoftwareReleases() {
         final List<Properties> softwareReleases = new ArrayList<>();
         final List<Properties> resultReleases = getSoftwareReleasesFromDatabase();
         if (!resultReleases.isEmpty()) {
             resultReleases.forEach(recordProperties -> {
                 final Properties newProperties = new Properties();
                 newProperties.put("Organization",
-                        String.format("%s<div style=\"text-align:right;\">[%s]</div>",
-                                recordProperties.get("OrganizationName"),
-                                recordProperties.get("OrganizationId")));
+                        recordProperties.get("OrganizationName")
+                        + "<div style=\"text-align:right;\">["
+                        + recordProperties.get("OrganizationId")
+                        + "]</div>");
                 newProperties.put("Product",
-                        String.format("<a href=\"%s\" target=\"_blank\"><span style=\"float:left;\">%s<br/>[%s]</span><span style=\"float:right;text-align:right;\">%s<br/>[%s]</span></a>",
-                                recordProperties.get("Releases"),
-                                recordProperties.get("ProductName"),
-                                recordProperties.get("ProductId"),
-                                recordProperties.get("BranchName"),
-                                recordProperties.get("BranchId")));
+                        "<a href=\""
+                        + recordProperties.get("Releases")
+                        + "\" target=\"_blank\"><span style=\"float:left;\">"
+                        + recordProperties.get("ProductName")
+                        + "<br/>["
+                        + recordProperties.get("ProductId")
+                        + "]</span><span style=\"float:right;text-align:right;\">"
+                        + recordProperties.get("BranchName")
+                        + "<br/>["
+                        + recordProperties.get("BranchId")
+                        + "]</span></a>");
                 newProperties.put("Version",
-                        String.format("%s<div style=\"text-align:right;\">[%s]</div>",
-                                recordProperties.get("Latest release version"),
-                                recordProperties.get("VersionId")));
+                        recordProperties.get("Latest release version")
+                        + "<div style=\"text-align:right;\">["
+                        + recordProperties.get("VersionId")
+                        + "]</div>");
                 newProperties.put("Date",
-                        String.format("%s<br>==> %s",
-                                recordProperties.get("Latest release date"),
-                                recordProperties.get("Latest release aging full").toString()));
+                        recordProperties.get("Latest release date")
+                        + "<br>==> "
+                        + recordProperties.get("Latest release aging full").toString());
                 newProperties.put("Files",
-                        String.format("%s [%s]<br/>==> %s [%s]",
-                                recordProperties.get("File Kit Name"),
-                                recordProperties.get("File Kit Id"),
-                                recordProperties.get("File Installed Name"),
-                                recordProperties.get("File Installed Id")));
+                        recordProperties.get("File Kit Name")
+                        + " ["
+                        + recordProperties.get("File Kit Id")
+                        + "]<br/>==> "
+                        + recordProperties.get("File Installed Name")
+                        + " ["
+                        + recordProperties.get("File Installed Id")
+                        + "]");
                 newProperties.put("Profile",
                         recordProperties.get("Profile Name"));
                 String lastRlsAgingDays = String.valueOf(recordProperties.get("Latest release aging days"));
@@ -78,7 +89,7 @@ public final class EnvironmentSoftwareReleasesSubClass {
      * @param agingDays number of days
      * @return String row style
      */
-    private static String establishRowStyle(final String agingDays) {
+    private static @NonNull String establishRowStyle(final @NonNull String agingDays) {
         String strRowColor = "#fff"; // white
         if (!agingDays.isEmpty()) {
             final long[] longRanges = {14, 30, 90};
@@ -98,7 +109,7 @@ public final class EnvironmentSoftwareReleasesSubClass {
      * expose Software Release details from internal DB
      * @return List software releases details
      */
-    private static List<Properties> getSoftwareReleasesFromDatabase() {
+    private static @NonNull List<Properties> getSoftwareReleasesFromDatabase() {
         List<Properties> resultReleases = new ArrayList<>();
         try (Connection objConnection = DatabaseSpecificSqLiteClass.getSqLiteConnection();
              Statement objStatement = DatabaseOperationsClass.ConnectivitySubClass.createSqlStatement(ConfigurationClass.STR_SQLITE, objConnection)) {

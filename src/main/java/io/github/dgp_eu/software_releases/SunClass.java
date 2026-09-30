@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.github.dgp_eu.tools.core.LogExposureClass;
 import io.github.dgp_eu.tools.core.time.TimingClass;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Sun position class
@@ -73,7 +74,7 @@ public final class SunClass {
      * @param isSunrise boolean if Sunrise 
      * @return ZonedDateTime
      */
-    private static ZonedDateTime calculateSunSetOrRise(final ZonedDateTime inNowZ, final boolean isSunrise) {
+    private static ZonedDateTime calculateSunSetOrRise(final @NonNull ZonedDateTime inNowZ, final boolean isSunrise) {
         final LocalDate inLocalDate = inNowZ.toLocalDate();
         final int dayOfYear = inLocalDate.getDayOfYear();
         // 1. Convert longitude to hour value and estimate time
@@ -121,7 +122,7 @@ public final class SunClass {
      * @param sunrise sun rise time
      * @param sunset sun set time
      */
-    private static void enhanceSunStatistics(final ZonedDateTime nowZ, final ZonedDateTime sunrise, final ZonedDateTime sunset) {
+    private static void enhanceSunStatistics(final @NonNull ZonedDateTime nowZ, final @NonNull ZonedDateTime sunrise, final @NonNull ZonedDateTime sunset) {
         final ZonedDateTime yesterdayZ = ZonedDateTime.now(internalZoneId).minusDays(1);
         final ZonedDateTime sunrisePrior = calculateSunSetOrRise(yesterdayZ, true);
         MAP_SUN.put("Yesterday Sunrise", sunrisePrior.format(APPLIED_FORMATER));
@@ -140,16 +141,16 @@ public final class SunClass {
         String strCrtSituation = "After sunset";
         if (nowZ.isBefore(sunrise)) {
             strCrtSituation = "Before sunrise";
-            MAP_SUN.put(PRIOR_EVENT, String.format("Sunset since %s", TimingClass.AgingSubClass.computeAgingIntoHumanReadableWords(sunsetPrior, nowZ)));
-            MAP_SUN.put(NEXT_EVENT, String.format("Sunrise in %s", TimingClass.AgingSubClass.computeAgingIntoHumanReadableWords(nowZ, sunrise)));
+            MAP_SUN.put(PRIOR_EVENT, "Sunset since " + TimingClass.AgingSubClass.computeAgingIntoHumanReadableWords(sunsetPrior, nowZ));
+            MAP_SUN.put(NEXT_EVENT, "Sunrise in " + TimingClass.AgingSubClass.computeAgingIntoHumanReadableWords(nowZ, sunrise));
         } else if (nowZ.isBefore(sunset)) {
             strSunSituation = "UP";
             strCrtSituation = "In between sunrise and sunset";
-            MAP_SUN.put(PRIOR_EVENT, String.format("Sunrise since %s", TimingClass.AgingSubClass.computeAgingIntoHumanReadableWords(sunrise, nowZ)));
-            MAP_SUN.put(NEXT_EVENT, String.format("Sunset in %s", TimingClass.AgingSubClass.computeAgingIntoHumanReadableWords(nowZ, sunset)));
+            MAP_SUN.put(PRIOR_EVENT, "Sunrise since " + TimingClass.AgingSubClass.computeAgingIntoHumanReadableWords(sunrise, nowZ));
+            MAP_SUN.put(NEXT_EVENT, "Sunset in " + TimingClass.AgingSubClass.computeAgingIntoHumanReadableWords(nowZ, sunset));
         } else {
-            MAP_SUN.put(PRIOR_EVENT, String.format("Sunset since %s", TimingClass.AgingSubClass.computeAgingIntoHumanReadableWords(sunset, nowZ)));
-            MAP_SUN.put(NEXT_EVENT, String.format("Sunrise in %s", TimingClass.AgingSubClass.computeAgingIntoHumanReadableWords(nowZ, sunriseNext)));
+            MAP_SUN.put(PRIOR_EVENT, "Sunset since " + TimingClass.AgingSubClass.computeAgingIntoHumanReadableWords(sunset, nowZ));
+            MAP_SUN.put(NEXT_EVENT, "Sunrise in " + TimingClass.AgingSubClass.computeAgingIntoHumanReadableWords(nowZ, sunriseNext));
         }
         MAP_SUN.put("Sun situation", strSunSituation);
         MAP_SUN.put("Current Situation", strCrtSituation);

@@ -21,19 +21,19 @@ class GetRemoteMavenPackageDetails implements Runnable {
         // no-op
         final String strPackage = "com.github.oshi:oshi-core-ffm";
         final String strVersion = RemoteInformationRetrievalClass.MavenSubClass.getLatestVersionFromMavenCentralRepository(strPackage);
-        final String strFeedback = String.format("For package %s latest version is: %s", strPackage, strVersion);
+        final String strFeedback = "For package " + strPackage + " latest version is: " + strVersion;
         LogExposureClass.LOGGER.info(strFeedback);
         final String strWebSite = RegularExpressionsClass.buildCentralMavenRepositoryUniformResourceLocator(strPackage);
         final String[] packageParts = strPackage.split(":");
-        final String strRemoteFileUrl = String.format("%s%s/%s-%s.jar", strWebSite, strVersion, packageParts[1], strVersion);
-        final String strFeedback2 = String.format("Remote file is: %s", strRemoteFileUrl);
+        final String strRemoteFileUrl = strWebSite + strVersion + "/" + packageParts[1] + "-" + strVersion + ".jar";
+        final String strFeedback2 = "Remote file is: " + strRemoteFileUrl;
         LogExposureClass.LOGGER.info(strFeedback2);
         final Properties urlAttributes = RemoteInformationRetrievalClass.RequestSubClass.requestHttpFile(strRemoteFileUrl, "AttributesFromHeader");
-        final String strFeedback3 = String.format("Retrieved attributes from header are: %s", urlAttributes);
+        final String strFeedback3 = "Retrieved attributes from header are: " + urlAttributes.toString();
         LogExposureClass.LOGGER.info(strFeedback3);
         final String strChecksumUrl = strRemoteFileUrl + ".sha256";
         final String checksumValue = RemoteInformationRetrievalClass.RequestSubClass.requestHttpFile(strChecksumUrl, ConfigurationClass.STR_CONTENT).getOrDefault(ConfigurationClass.STR_CONTENT, "MISSING").toString().trim().toLowerCase(Locale.ENGLISH);
-        final String strFeedback4 = String.format("SHA-256 from %s has content: %s", strChecksumUrl, checksumValue);
+        final String strFeedback4 = "SHA-256 from " + strChecksumUrl + " has content: " + checksumValue;
         LogExposureClass.LOGGER.info(strFeedback4);
     }
 

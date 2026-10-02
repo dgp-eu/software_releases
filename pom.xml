@@ -6,7 +6,7 @@
 
     <groupId>io.github.dgp-eu</groupId>
     <artifactId>software_releases</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
     <packaging>jar</packaging>
 
     <name>software_releases</name>
@@ -61,11 +61,11 @@
         <depgraph-maven-plugin.version>4.0.5</depgraph-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
         <maven-antrun-plugin.version>3.2.0</maven-antrun-plugin.version>
-        <maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
         <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <maven-pmd-plugin.version>3.28.0</maven-pmd-plugin.version>
+        <maven-shade-plugin.version>3.6.2</maven-shade-plugin.version>
         <maven-surefire-plugin.version>3.6.0</maven-surefire-plugin.version>
         <pmd.version>7.28.0</pmd.version>
         <takari-lifecycle-plugin.version>2.3.4</takari-lifecycle-plugin.version>
@@ -328,7 +328,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>[3.9,3.10]</version>
+                                    <version>[3.9,)</version>
                                 </requireMavenVersion>
                             </rules>    
                         </configuration>
@@ -380,6 +380,46 @@
 
     <profiles>
         <profile>
+            <id>mavenCentral</id>
+            <activation>
+                <property>
+                    <name>release</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>${maven-shade-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>make-fat-jar</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- Keep original JAR -->
+                                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                                    <transformers>
+                                        <!-- add Main-Class to manifest file -->
+                                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                            <manifestEntries>
+                                                <Main-Class>io.github.dgp_eu.software_releases.cli.ApplicationSoftwareReleases</Main-Class>
+                                                <X-Compile-Source-JDK>${maven.compile.source}</X-Compile-Source-JDK>
+                                                <X-Compile-Target-JDK>${maven.compile.target}</X-Compile-Target-JDK>
+                                            </manifestEntries>
+                                        </transformer>
+                                    </transformers>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>local</id>
             <activation>
                 <property>
@@ -390,24 +430,30 @@
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>${maven-assembly-plugin.version}</version>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>${maven-shade-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>make-fat-jar</id>
                                 <phase>package</phase>
                                 <goals>
-                                    <goal>single</goal>
+                                    <goal>shade</goal>
                                 </goals>
                                 <configuration>
-                                    <descriptorRefs>
-                                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                                    </descriptorRefs>
-                                    <archive>
-                                        <manifest>
-                                            <mainClass>io.github.dgp_eu.software_releases.cli.ApplicationSoftwareReleases</mainClass>
-                                        </manifest>
-                                    </archive>
+                                    <!-- Keep original JAR -->
+                                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                                    <!-- Fat JAR classifier -->
+                                    <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
+                                    <transformers>
+                                        <!-- add Main-Class to manifest file -->
+                                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                            <manifestEntries>
+                                                <Main-Class>io.github.dgp_eu.software_releases.cli.ApplicationSoftwareReleases</Main-Class>
+                                                <X-Compile-Source-JDK>${maven.compile.source}</X-Compile-Source-JDK>
+                                                <X-Compile-Target-JDK>${maven.compile.target}</X-Compile-Target-JDK>
+                                            </manifestEntries>
+                                        </transformer>
+                                    </transformers>
                                 </configuration>
                             </execution>
                         </executions>
